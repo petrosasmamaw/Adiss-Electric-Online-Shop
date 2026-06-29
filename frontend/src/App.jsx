@@ -1,0 +1,46 @@
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import ContactModal from './components/ContactModal';
+import OrderModal from './components/OrderModal';
+import ToastContainer from './components/ToastContainer';
+import ProtectedRoute from './components/ProtectedRoute';
+import usePageTitle from './hooks/usePageTitle';
+import Storefront from './pages/Storefront';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+
+function AppContent() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const isLoginPage = location.pathname === '/admin/login';
+  usePageTitle();
+
+  return (
+    <>
+      {(!isAdminRoute || isLoginPage) && <Navbar />}
+      {!isAdminRoute && <ContactModal />}
+      {!isAdminRoute && <OrderModal />}
+      <ToastContainer />
+      <Routes>
+        <Route path="/" element={<Storefront />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route
+          path="/admin/*"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
+}

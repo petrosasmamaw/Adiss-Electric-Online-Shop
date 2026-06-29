@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DESIGN TOKENS — Deep Ink + Electric Amber + Smoke White
+   ============================================================ */
+:root {
+  --ink: #1A1A1A;
+  --ink2: #2E2E2E;
+  --ink3: #444444;
+  --amber: #F5A623;
+  --amber2: #E8941A;
+  --amber-tint: #FEF3DC;
+  --smoke: #F7F7F5;
+  --white: #FFFFFF;
+  --muted: #888888;
+  --border: #E8E6E0;
+  --danger: #D93B3B;
+  --success: #2A7A4B;
+}
+
+@theme {
+  --color-ink: #1A1A1A;
+  --color-ink2: #2E2E2E;
+  --color-ink3: #444444;
+  --color-amber: #F5A623;
+  --color-amber2: #E8941A;
+  --color-amber-tint: #FEF3DC;
+  --color-smoke: #F7F7F5;
+  --color-muted: #888888;
+  --color-border: #E8E6E0;
+  --color-danger: #D93B3B;
+  --color-success: #2A7A4B;
+
+  --font-sans: "Barlow", sans-serif;
+  --font-condensed: "Barlow Condensed", sans-serif;
+}
+
+/* ============================================================
+   BASE / GLOBAL
+   ============================================================ */
+html {
+  font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--smoke);
+  color: var(--ink);
+  font-family: "Barlow", sans-serif;
+  font-size: 14px;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.font-condensed {
+  font-family: var(--font-condensed);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+/* ============================================================
+   FOCUS & ACCESSIBILITY
+   ============================================================ */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.25);
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.shadow-dropdown {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* ============================================================
+   LIVE CURRENT RULE (animated amber divider)
+   ============================================================ */
+.current-rule {
+  height: 2px;
+  background: var(--amber);
+  border-radius: 1px;
+  position: relative;
+  overflow: hidden;
+  margin: 40px 0;
+}
+
+.current-rule::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: current-shimmer 2.5s ease-in-out infinite;
+}
+
+@keyframes current-shimmer {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 140%;
+  }
+}
+
+/* ============================================================
+   SKELETON SHIMMER
+   ============================================================ */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #E8E6E0 25%, #F0EDE6 50%, #E8E6E0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* ============================================================
+   TOAST ANIMATIONS
+   ============================================================ */
+@keyframes toast-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toast-slide-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-enter {
+  animation: toast-slide-in-right 0.2s ease-out;
+}
+
+@media (max-width: 767px) {
+  .toast-enter {
+    animation: toast-slide-in-bottom 0.2s ease-out;
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .current-rule::after {
+    display: none;
+  }
+}
