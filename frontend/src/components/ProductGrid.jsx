@@ -7,7 +7,7 @@ import ProductCard from './ProductCard';
 import ProductSkeleton from './ProductSkeleton';
 
 const GRID =
-  'max-w-6xl mx-auto px-6 py-6 grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4';
+  'max-w-6xl mx-auto px-6 py-6 grid gap-5 grid-cols-2 lg:grid-cols-4';
 
 export default function ProductGrid() {
   const dispatch = useDispatch();

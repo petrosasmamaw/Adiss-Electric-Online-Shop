@@ -61,6 +61,11 @@ body {
   min-height: 100vh;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 .font-condensed {
   font-family: var(--font-condensed);
 }

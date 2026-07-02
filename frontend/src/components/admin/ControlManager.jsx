@@ -5,8 +5,8 @@ import { showToast } from '../../store/toastSlice';
 
 function ToggleRow({ title, description, enabled, onToggle, disabled }) {
   return (
-    <div className="flex items-center justify-between gap-4 bg-white rounded-xl border border-border p-4">
-      <div>
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-xl border border-border p-4">
+      <div className="w-full">
         <p className="font-sans font-semibold text-[14px] text-ink">{title}</p>
         <p className="font-sans text-[12px] text-muted mt-0.5">{description}</p>
       </div>
@@ -14,14 +14,14 @@ function ToggleRow({ title, description, enabled, onToggle, disabled }) {
         type="button"
         onClick={onToggle}
         disabled={disabled}
-        className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-150 ${
+        className={`relative inline-flex h-11 w-20 sm:h-7 sm:w-14 items-center rounded-full transition-colors duration-150 ${
           enabled ? 'bg-amber' : 'bg-border'
         } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
         aria-pressed={enabled}
       >
         <span
-          className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-150 ${
-            enabled ? 'translate-x-8' : 'translate-x-1'
+          className={`inline-block h-7 w-7 sm:h-5 sm:w-5 transform rounded-full bg-white transition-transform duration-150 ${
+            enabled ? 'translate-x-12 sm:translate-x-8' : 'translate-x-1'
           }`}
         />
       </button>

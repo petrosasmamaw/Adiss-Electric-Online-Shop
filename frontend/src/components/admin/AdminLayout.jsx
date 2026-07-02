@@ -74,9 +74,9 @@ export default function AdminLayout() {
           <BrandLogo small />
           <Link
             to="/"
-            className="inline-flex items-center gap-1 text-muted hover:text-ink text-[11px] font-semibold uppercase tracking-[0.04em] border border-border px-3 py-1.5 rounded-md transition-colors duration-150"
+            className="inline-flex items-center gap-1 text-muted hover:text-ink text-[11px] font-semibold uppercase tracking-[0.04em] border border-border px-2.5 py-1.5 rounded-md transition-colors duration-150 min-h-11"
           >
-            <IconArrowLeft size={14} /> Shop
+            <IconArrowLeft size={14} /> <span className="max-[380px]:hidden">Shop</span>
           </Link>
         </header>
 
