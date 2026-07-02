@@ -11,7 +11,7 @@ export default function BrandLogo({ to = '/', small = false }) {
         <img
           src="/card.jpg"
           alt=""
-          className="w-full h-full object-cover object-[28%_20%] scale-[1.7]"
+          className="w-full h-full object-cover"
         />
       </span>
       <span className="font-condensed font-extrabold tracking-[0.01em] leading-none max-[380px]:hidden">
