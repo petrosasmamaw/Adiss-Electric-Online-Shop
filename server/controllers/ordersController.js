@@ -32,7 +32,8 @@ async function createOrder(req, res) {
     }
 
     const item = itemResult.rows[0];
-    const total_price = parseFloat(item.price) * qty;
+    const unitPrice = Number(item.upper_price ?? item.price ?? 0);
+    const total_price = unitPrice * qty;
 
     const result = await pool.query(
       `INSERT INTO orders (item_id, item_name, customer_phone, customer_name, customer_address, quantity, total_price)

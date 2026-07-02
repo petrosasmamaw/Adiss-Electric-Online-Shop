@@ -8,7 +8,7 @@ import {
 } from '../../store/adminSlice';
 import { fetchCategories } from '../../store/categoriesSlice';
 import { showToast } from '../../store/toastSlice';
-import { formatPrice } from '../../utils/formatPrice';
+import { formatPrice, getPriceRangeFromItem } from '../../utils/formatPrice';
 import { filterItems } from '../../utils/filterItems';
 import CategoryPills from '../CategoryPills';
 import ItemSearchBar from '../ItemSearchBar';
@@ -33,6 +33,11 @@ function Thumbnail({ imageUrl, name }) {
 
 const badgeClass =
   'inline-block bg-transparent border border-ink text-ink text-[9px] font-bold uppercase tracking-[0.05em] px-2 py-0.5 rounded-full';
+
+function formatItemRange(item) {
+  const { low, high } = getPriceRangeFromItem(item);
+  return `${formatPrice(low)} - ${formatPrice(high)}`;
+}
 
 export default function ItemsManager() {
   const dispatch = useDispatch();
@@ -136,7 +141,7 @@ export default function ItemsManager() {
                       <span className={badgeClass}>{item.category}</span>
                     </td>
                     <td className="px-4 py-3 font-condensed font-bold text-[15px] text-amber">
-                      {formatPrice(item.price)}
+                      {formatItemRange(item)}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1.5">
@@ -176,7 +181,7 @@ export default function ItemsManager() {
                     </p>
                     <span className={`${badgeClass} mt-1`}>{item.category}</span>
                     <p className="font-condensed font-bold text-[16px] text-amber mt-1">
-                      {formatPrice(item.price)}
+                      {formatItemRange(item)}
                     </p>
                   </div>
                 </div>

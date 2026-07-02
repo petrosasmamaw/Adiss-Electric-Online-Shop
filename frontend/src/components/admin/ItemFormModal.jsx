@@ -25,7 +25,8 @@ function Spinner() {
 const emptyForm = {
   name: '',
   category: '',
-  price: '',
+  lower_price: '',
+  upper_price: '',
   description: '',
   image_url: null,
 };
@@ -51,7 +52,8 @@ export default function ItemFormModal() {
         setForm({
           name: editItem.name || '',
           category: editItem.category || '',
-          price: editItem.price?.toString() || '',
+          lower_price: (editItem.lower_price ?? editItem.price)?.toString() || '',
+          upper_price: (editItem.upper_price ?? editItem.price)?.toString() || '',
           description: editItem.description || '',
           image_url: editItem.image_url || null,
         });
@@ -85,10 +87,22 @@ export default function ItemFormModal() {
     const next = {};
     if (!form.name.trim()) next.name = 'Name is required';
     if (!form.category.trim()) next.category = 'Category is required';
-    if (form.price === '' || form.price == null) {
-      next.price = 'Price is required';
-    } else if (parseFloat(form.price) < 0) {
-      next.price = 'Price must be 0 or greater';
+    if (form.lower_price === '' || form.lower_price == null) {
+      next.lower_price = 'Lower price is required';
+    } else if (parseFloat(form.lower_price) < 0) {
+      next.lower_price = 'Lower price must be 0 or greater';
+    }
+    if (form.upper_price === '' || form.upper_price == null) {
+      next.upper_price = 'Upper price is required';
+    } else if (parseFloat(form.upper_price) < 0) {
+      next.upper_price = 'Upper price must be 0 or greater';
+    }
+    if (
+      form.lower_price !== '' &&
+      form.upper_price !== '' &&
+      parseFloat(form.lower_price) > parseFloat(form.upper_price)
+    ) {
+      next.upper_price = 'Upper price must be greater than or equal to lower price';
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -124,7 +138,8 @@ export default function ItemFormModal() {
     const payload = {
       name: form.name.trim(),
       category: form.category.trim(),
-      price: parseFloat(form.price),
+      lower_price: parseFloat(form.lower_price),
+      upper_price: parseFloat(form.upper_price),
       description: form.description.trim() || null,
       image_url: imageUrl,
     };
@@ -205,17 +220,32 @@ export default function ItemFormModal() {
             </div>
 
             <div className="mb-3.5">
-              <label className={labelClass}>Price (ETB)</label>
+              <label className={labelClass}>Lower Price (ETB)</label>
               <input
                 type="number"
                 step="0.01"
                 min="0"
-                value={form.price}
-                onChange={(e) => setForm({ ...form, price: e.target.value })}
-                className={inputClass(errors.price)}
+                value={form.lower_price}
+                onChange={(e) => setForm({ ...form, lower_price: e.target.value })}
+                className={inputClass(errors.lower_price)}
               />
-              {errors.price && (
-                <p className="text-danger text-[11px] mt-1 font-medium">{errors.price}</p>
+              {errors.lower_price && (
+                <p className="text-danger text-[11px] mt-1 font-medium">{errors.lower_price}</p>
+              )}
+            </div>
+
+            <div className="mb-3.5">
+              <label className={labelClass}>Upper Price (ETB)</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={form.upper_price}
+                onChange={(e) => setForm({ ...form, upper_price: e.target.value })}
+                className={inputClass(errors.upper_price)}
+              />
+              {errors.upper_price && (
+                <p className="text-danger text-[11px] mt-1 font-medium">{errors.upper_price}</p>
               )}
             </div>
 

@@ -48,16 +48,23 @@ async function initDatabase() {
     const { rows } = await client.query('SELECT COUNT(*)::int AS count FROM items');
     if (rows[0].count === 0) {
       for (const item of seedItems) {
+        const price = (item.lower_price + item.upper_price) / 2;
         await client.query(
-          `INSERT INTO items (name, price, category, image_url, description)
-           VALUES ($1, $2, $3, NULL, $4)`,
-          [item.name, item.price, item.category, item.description]
+          `INSERT INTO items (name, price, lower_price, upper_price, category, image_url, description)
+           VALUES ($1, $2, $3, $4, $5, NULL, $6)`,
+          [item.name, price, item.lower_price, item.upper_price, item.category, item.description]
         );
       }
       console.log(`Seeded ${seedItems.length} items.`);
     } else {
       console.log(`Items table already has ${rows[0].count} rows — skipping seed.`);
     }
+
+    await client.query(
+      `UPDATE items
+       SET lower_price = COALESCE(lower_price, price),
+           upper_price = COALESCE(upper_price, price)`
+    );
 
     console.log('Database initialized successfully.');
   } finally {

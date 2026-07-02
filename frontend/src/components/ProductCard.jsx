@@ -40,7 +40,7 @@ export default function ProductCard({ item }) {
         </h3>
         {priceVisible ? (
           <p className="font-condensed font-bold text-[20px] text-amber mb-2.5">
-            {formatPublicPriceRange(item.price, item.id)}
+            {formatPublicPriceRange(item)}
           </p>
         ) : (
           <p className="font-sans font-semibold text-[12px] text-muted mb-2.5">
