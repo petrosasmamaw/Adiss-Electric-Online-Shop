@@ -1,21 +1,14 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { IconPackage, IconClipboardList, IconLogout, IconArrowLeft } from '@tabler/icons-react';
+import { IconPackage, IconClipboardList, IconLogout, IconArrowLeft, IconAdjustments } from '@tabler/icons-react';
 import { logout } from '../../store/authSlice';
+import BrandLogo from '../BrandLogo';
 
 const navItems = [
+  { to: '/admin/dashboard/control', label: 'Control', Icon: IconAdjustments, end: false },
   { to: '/admin/dashboard', label: 'Items', Icon: IconPackage, end: true },
   { to: '/admin/dashboard/orders', label: 'Orders', Icon: IconClipboardList, end: false },
 ];
-
-function Logo({ size = 18 }) {
-  return (
-    <span className="font-condensed font-extrabold tracking-[0.02em]" style={{ fontSize: size }}>
-      <span className="text-amber">⚡ ADDIS</span>
-      <span className="text-ink"> ELECTRIC</span>
-    </span>
-  );
-}
 
 export default function AdminLayout() {
   const dispatch = useDispatch();
@@ -31,7 +24,7 @@ export default function AdminLayout() {
       {/* Desktop sidebar */}
       <aside className="hidden md:flex w-[240px] min-h-screen bg-white border-r border-border flex-col">
         <div className="px-5 py-4 border-b border-border">
-          <Logo size={18} />
+          <BrandLogo small />
           <p className="text-muted text-[10px] uppercase tracking-wide mt-0.5">Admin</p>
         </div>
 
@@ -78,7 +71,7 @@ export default function AdminLayout() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Mobile top bar */}
         <header className="md:hidden sticky top-0 z-10 flex items-center justify-between h-[52px] px-4 bg-white border-b border-border">
-          <Logo size={16} />
+          <BrandLogo small />
           <Link
             to="/"
             className="inline-flex items-center gap-1 text-muted hover:text-ink text-[11px] font-semibold uppercase tracking-[0.04em] border border-border px-3 py-1.5 rounded-md transition-colors duration-150"

@@ -1,34 +1,34 @@
 @import "tailwindcss";
 
 /* ============================================================
-   DESIGN TOKENS — Deep Ink + Electric Amber + Smoke White
+   DESIGN TOKENS — Card-inspired Blue + Red + White + Black
    ============================================================ */
 :root {
-  --ink: #1A1A1A;
-  --ink2: #2E2E2E;
-  --ink3: #444444;
-  --amber: #F5A623;
-  --amber2: #E8941A;
-  --amber-tint: #FEF3DC;
-  --smoke: #F7F7F5;
+  --ink: #0F172A;
+  --ink2: #142459;
+  --ink3: #273C75;
+  --amber: #D90429;
+  --amber2: #B10322;
+  --amber-tint: #FDECEF;
+  --smoke: #F4F7FF;
   --white: #FFFFFF;
-  --muted: #888888;
-  --border: #E8E6E0;
-  --danger: #D93B3B;
+  --muted: #5F6B8A;
+  --border: #D6DEEF;
+  --danger: #C1121F;
   --success: #2A7A4B;
 }
 
 @theme {
-  --color-ink: #1A1A1A;
-  --color-ink2: #2E2E2E;
-  --color-ink3: #444444;
-  --color-amber: #F5A623;
-  --color-amber2: #E8941A;
-  --color-amber-tint: #FEF3DC;
-  --color-smoke: #F7F7F5;
-  --color-muted: #888888;
-  --color-border: #E8E6E0;
-  --color-danger: #D93B3B;
+  --color-ink: #0F172A;
+  --color-ink2: #142459;
+  --color-ink3: #273C75;
+  --color-amber: #D90429;
+  --color-amber2: #B10322;
+  --color-amber-tint: #FDECEF;
+  --color-smoke: #F4F7FF;
+  --color-muted: #5F6B8A;
+  --color-border: #D6DEEF;
+  --color-danger: #C1121F;
   --color-success: #2A7A4B;
 
   --font-sans: "Barlow", sans-serif;
@@ -78,7 +78,7 @@ body {
 
 :focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.25);
+  box-shadow: 0 0 0 3px rgba(217, 4, 41, 0.25);
 }
 
 /* ============================================================
@@ -149,7 +149,7 @@ body {
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #E8E6E0 25%, #F0EDE6 50%, #E8E6E0 75%);
+  background: linear-gradient(90deg, #D6DEEF 25%, #E6ECF8 50%, #D6DEEF 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }

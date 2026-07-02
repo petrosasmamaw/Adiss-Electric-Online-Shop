@@ -14,6 +14,7 @@ export default function ProductGrid() {
   const { items, loading, error, selectedCategory, searchQuery } = useSelector(
     (state) => state.items
   );
+  const productsEnabled = useSelector((state) => state.controls.products_enabled);
 
   const filteredItems = useMemo(
     () => filterItems(items, { search: searchQuery }),
@@ -55,6 +56,20 @@ export default function ProductGrid() {
         </h2>
         <p className="font-sans text-[13px] text-muted">
           Check back soon — new items are added regularly
+        </p>
+      </div>
+    );
+  }
+
+  if (!productsEnabled) {
+    return (
+      <div className="max-w-6xl mx-auto px-6 py-20 flex flex-col items-center justify-center text-center">
+        <IconBolt size={48} className="text-border mb-4" />
+        <h2 className="font-condensed font-bold text-[22px] text-ink mb-1">
+          The products are holded
+        </h2>
+        <p className="font-sans text-[13px] text-muted">
+          Please check back later.
         </p>
       </div>
     );

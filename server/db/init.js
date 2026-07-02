@@ -39,6 +39,12 @@ async function initDatabase() {
 
     await seedAdmin(client);
 
+    await client.query(
+      `INSERT INTO app_controls (id, products_enabled, price_visible)
+       VALUES (1, TRUE, TRUE)
+       ON CONFLICT (id) DO NOTHING`
+    );
+
     const { rows } = await client.query('SELECT COUNT(*)::int AS count FROM items');
     if (rows[0].count === 0) {
       for (const item of seedItems) {

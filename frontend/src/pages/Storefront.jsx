@@ -5,6 +5,7 @@ import CategoryFilter from '../components/CategoryFilter';
 import ProductGrid from '../components/ProductGrid';
 import { fetchItems } from '../store/itemsSlice';
 import { fetchCategories } from '../store/categoriesSlice';
+import { fetchControls } from '../store/controlsSlice';
 
 export default function Storefront() {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ export default function Storefront() {
 
   useEffect(() => {
     dispatch(fetchCategories());
+    dispatch(fetchControls());
   }, [dispatch]);
 
   useEffect(() => {

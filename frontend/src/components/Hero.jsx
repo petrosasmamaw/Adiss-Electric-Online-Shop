@@ -4,7 +4,7 @@ export default function Hero() {
       className="relative overflow-hidden pt-20 pb-8 px-6 md:pt-24 md:pb-10"
       style={{
         background:
-          'radial-gradient(120% 120% at 85% 15%, #2E2E2E 0%, #1E1E1E 45%, #161616 100%)',
+          'radial-gradient(120% 120% at 85% 15%, #273C75 0%, #142459 45%, #0B1020 100%)',
       }}
     >
       {/* Circuit-board trace pattern (electrical theme) */}
@@ -24,7 +24,7 @@ export default function Hero() {
           >
             <g
               fill="none"
-              stroke="#F5A623"
+              stroke="#D90429"
               strokeOpacity="0.10"
               strokeWidth="1.5"
             >
@@ -34,7 +34,7 @@ export default function Hero() {
               <path d="M0 100 H40 V130" />
               <path d="M70 100 H120 V60" />
             </g>
-            <g fill="#F5A623" fillOpacity="0.18">
+            <g fill="#D90429" fillOpacity="0.18">
               <circle cx="60" cy="70" r="3" />
               <circle cx="80" cy="50" r="3" />
               <circle cx="30" cy="50" r="2.5" />
@@ -47,7 +47,7 @@ export default function Hero() {
         <rect width="100%" height="100%" fill="url(#hero-circuit)" />
       </svg>
 
-      {/* Soft amber glow accent */}
+      {/* Soft red glow accent */}
       <div
         className="absolute pointer-events-none"
         style={{
@@ -56,7 +56,7 @@ export default function Hero() {
           width: '320px',
           height: '320px',
           background:
-            'radial-gradient(circle, rgba(245,166,35,0.16) 0%, rgba(245,166,35,0) 70%)',
+            'radial-gradient(circle, rgba(217,4,41,0.18) 0%, rgba(217,4,41,0) 70%)',
         }}
       />
 
@@ -69,7 +69,7 @@ export default function Hero() {
           top: '-20px',
           width: '180px',
           height: '180px',
-          border: '40px solid rgba(245,166,35,0.06)',
+          border: '40px solid rgba(217,4,41,0.07)',
           borderRadius: '50%',
           pointerEvents: 'none',
         }}
@@ -82,7 +82,7 @@ export default function Hero() {
           top: '30px',
           width: '100px',
           height: '100px',
-          border: '20px solid rgba(245,166,35,0.04)',
+          border: '20px solid rgba(217,4,41,0.05)',
           borderRadius: '50%',
           pointerEvents: 'none',
         }}
@@ -100,7 +100,7 @@ export default function Hero() {
       >
         <path
           d="M13 2L4 14H11L10 22L20 10H13L13 2Z"
-          fill="#F5A623"
+          fill="#D90429"
           fillOpacity="0.05"
         />
       </svg>
@@ -116,7 +116,7 @@ export default function Hero() {
           <span className="text-amber">ELECTRICAL</span> SUPPLIER
         </h1>
 
-        <p className="text-[#aaaaaa] text-[13px] leading-relaxed max-w-sm">
+        <p className="text-[#CBD5F1] text-[13px] leading-relaxed max-w-sm">
           Cables, switches, bulbs and more — quality products for home and business.
         </p>
 

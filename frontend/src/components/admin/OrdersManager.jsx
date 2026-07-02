@@ -1,37 +1,47 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IconClipboardList, IconPhone, IconTrash, IconRefresh } from '@tabler/icons-react';
 import {
   fetchAdminOrders,
   deleteAdminOrder,
+  updateOrderStatus,
 } from '../../store/ordersSlice';
 import { showToast } from '../../store/toastSlice';
 import { formatPrice } from '../../utils/formatPrice';
+import { formatEthiopianDateTime } from '../../utils/ethiopianDate';
+import StatusFilterPills from '../StatusFilterPills';
 
-function formatDate(dateStr) {
-  return new Date(dateStr).toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
+const ORDER_STATUSES = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'in_delivery', label: 'In Delivery' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'canceled', label: 'Canceled' },
+];
 
-function StatusBadge({ status }) {
-  const isCompleted = status === 'completed' || status === 'done';
+const STATUS_FILTER_OPTIONS = [
+  { value: 'all', label: 'All' },
+  ...ORDER_STATUSES,
+];
+
+function StatusSelect({ order, onChange, updating }) {
   return (
-    <span
-      className={`text-[9px] font-bold uppercase tracking-[0.05em] px-2 py-0.5 rounded-full ${
-        isCompleted ? 'bg-[#E8F5EE] text-success' : 'bg-amber-tint text-amber2'
-      }`}
+    <select
+      value={order.status || 'pending'}
+      onChange={(e) => onChange(order.id, e.target.value)}
+      disabled={updating}
+      className="w-full min-w-[120px] px-2 py-1.5 rounded-md border border-border bg-white font-sans text-[12px] text-ink focus:border-amber focus:ring-2 focus:ring-amber/15 outline-none transition-colors duration-150 disabled:opacity-60 disabled:cursor-wait"
+      aria-label={`Status for order ${order.id}`}
     >
-      {isCompleted ? 'Completed' : 'Pending'}
-    </span>
+      {ORDER_STATUSES.map(({ value, label }) => (
+        <option key={value} value={value}>
+          {label}
+        </option>
+      ))}
+    </select>
   );
 }
 
-function OrderCard({ order, onDelete }) {
+function OrderCard({ order, onDelete, onStatusChange, updatingId }) {
   return (
     <div className="bg-white rounded-xl border border-border p-4">
       <div className="flex justify-between items-start gap-2">
@@ -49,7 +59,7 @@ function OrderCard({ order, onDelete }) {
           ['Phone', order.customer_phone],
           ['Address', order.customer_address],
           ['Qty', order.quantity],
-          ['Date', formatDate(order.created_at)],
+          ['Date', formatEthiopianDateTime(order.created_at)],
         ].map(([label, value]) => (
           <div key={label} className="flex justify-between gap-4">
             <span className="text-muted text-[11px] font-bold uppercase tracking-wide shrink-0">
@@ -58,6 +68,18 @@ function OrderCard({ order, onDelete }) {
             <span className="text-ink3 text-[12px] font-medium text-right">{value}</span>
           </div>
         ))}
+        <div className="flex justify-between items-center gap-4 pt-1">
+          <span className="text-muted text-[11px] font-bold uppercase tracking-wide shrink-0">
+            Status
+          </span>
+          <div className="flex-1 max-w-[160px]">
+            <StatusSelect
+              order={order}
+              onChange={onStatusChange}
+              updating={updatingId === order.id}
+            />
+          </div>
+        </div>
       </div>
       <button
         type="button"
@@ -73,6 +95,13 @@ function OrderCard({ order, onDelete }) {
 export default function OrdersManager() {
   const dispatch = useDispatch();
   const { adminOrders, adminLoading, adminError } = useSelector((state) => state.orders);
+  const updatingId = useSelector((state) => state.orders.updatingStatusId);
+  const [statusFilter, setStatusFilter] = useState('all');
+
+  const filteredOrders = useMemo(() => {
+    if (statusFilter === 'all') return adminOrders;
+    return adminOrders.filter((order) => (order.status || 'pending') === statusFilter);
+  }, [adminOrders, statusFilter]);
 
   const loadOrders = () => {
     dispatch(fetchAdminOrders())
@@ -93,6 +122,13 @@ export default function OrdersManager() {
     }
   };
 
+  const handleStatusChange = (id, status) => {
+    dispatch(updateOrderStatus({ id, status }))
+      .unwrap()
+      .then(() => dispatch(showToast('Order status updated.', 'success')))
+      .catch((err) => dispatch(showToast(`Error: ${err}`, 'error', 5000)));
+  };
+
   const thClass =
     'text-left px-4 py-3 font-bold text-[11px] text-muted uppercase tracking-[0.06em]';
 
@@ -110,6 +146,16 @@ export default function OrdersManager() {
         </button>
       </div>
 
+      {!adminLoading && !adminError && adminOrders.length > 0 && (
+        <div className="bg-white rounded-xl border border-border p-4 mb-5">
+          <StatusFilterPills
+            options={STATUS_FILTER_OPTIONS}
+            selected={statusFilter}
+            onSelect={setStatusFilter}
+          />
+        </div>
+      )}
+
       {adminLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -122,6 +168,13 @@ export default function OrdersManager() {
         <div className="bg-white rounded-xl border border-border py-16 text-center">
           <IconClipboardList size={36} className="text-border mx-auto mb-3" />
           <p className="font-sans text-[13px] text-muted">No orders yet.</p>
+        </div>
+      ) : filteredOrders.length === 0 ? (
+        <div className="bg-white rounded-xl border border-border py-16 text-center">
+          <IconClipboardList size={36} className="text-border mx-auto mb-3" />
+          <p className="font-sans text-[13px] text-muted">
+            No orders with this status.
+          </p>
         </div>
       ) : (
         <>
@@ -141,7 +194,7 @@ export default function OrdersManager() {
                 </tr>
               </thead>
               <tbody>
-                {adminOrders.map((order) => (
+                {filteredOrders.map((order) => (
                   <tr
                     key={order.id}
                     className="border-b border-border hover:bg-smoke transition-colors duration-100"
@@ -164,10 +217,14 @@ export default function OrdersManager() {
                       {formatPrice(order.total_price)}
                     </td>
                     <td className="px-4 py-3">
-                      <StatusBadge status={order.status} />
+                      <StatusSelect
+                        order={order}
+                        onChange={handleStatusChange}
+                        updating={updatingId === order.id}
+                      />
                     </td>
                     <td className="px-4 py-3 text-muted text-[12px] font-sans whitespace-nowrap">
-                      {formatDate(order.created_at)}
+                      {formatEthiopianDateTime(order.created_at)}
                     </td>
                     <td className="px-4 py-3">
                       <button
@@ -186,8 +243,14 @@ export default function OrdersManager() {
           </div>
 
           <div className="md:hidden space-y-3">
-            {adminOrders.map((order) => (
-              <OrderCard key={order.id} order={order} onDelete={handleDelete} />
+            {filteredOrders.map((order) => (
+              <OrderCard
+                key={order.id}
+                order={order}
+                onDelete={handleDelete}
+                onStatusChange={handleStatusChange}
+                updatingId={updatingId}
+              />
             ))}
           </div>
         </>

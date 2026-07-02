@@ -6,6 +6,7 @@ import modalReducer from './modalSlice';
 import authReducer from './authSlice';
 import adminReducer from './adminSlice';
 import toastReducer from './toastSlice';
+import controlsReducer from './controlsSlice';
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     auth: authReducer,
     admin: adminReducer,
     toast: toastReducer,
+    controls: controlsReducer,
   },
 });
 

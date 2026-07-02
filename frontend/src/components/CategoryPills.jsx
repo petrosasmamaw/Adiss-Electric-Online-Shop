@@ -35,10 +35,10 @@ export default function CategoryPills({
               }}
               type="button"
               onClick={() => onSelect(cat)}
-              className={`shrink-0 px-4 py-1.5 rounded-full font-sans font-semibold text-xs uppercase tracking-[0.05em] transition-colors duration-150 ${
+              className={`shrink-0 px-4 py-1.5 rounded-full border font-sans font-semibold text-xs uppercase tracking-[0.05em] transition-colors duration-150 ${
                 isActive
-                  ? 'bg-ink text-amber'
-                  : 'bg-transparent text-muted hover:text-ink'
+                  ? 'bg-transparent border-ink text-ink'
+                  : 'bg-transparent border-transparent text-muted hover:text-ink'
               }`}
             >
               {label(cat)}

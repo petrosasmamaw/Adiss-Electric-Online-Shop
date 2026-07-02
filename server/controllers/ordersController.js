@@ -68,4 +68,34 @@ async function deleteOrder(req, res) {
   }
 }
 
-module.exports = { getOrders, createOrder, deleteOrder };
+const VALID_STATUSES = ['pending', 'in_delivery', 'delivered', 'canceled'];
+
+async function updateOrderStatus(req, res) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status || !VALID_STATUSES.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        error: `Status must be one of: ${VALID_STATUSES.join(', ')}`,
+      });
+    }
+
+    const result = await pool.query(
+      'UPDATE orders SET status = $1 WHERE id = $2 RETURNING *',
+      [status, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+
+    return res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    console.error('updateOrderStatus error:', err.message);
+    return res.status(500).json({ success: false, error: 'Failed to update order status' });
+  }
+}
+
+module.exports = { getOrders, createOrder, deleteOrder, updateOrderStatus };

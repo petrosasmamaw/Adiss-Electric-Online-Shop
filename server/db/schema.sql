@@ -27,3 +27,10 @@ CREATE TABLE IF NOT EXISTS orders (
   status VARCHAR(30) DEFAULT 'pending',
   created_at TIMESTAMP DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS app_controls (
+  id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
+  products_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  price_visible BOOLEAN NOT NULL DEFAULT TRUE,
+  updated_at TIMESTAMP DEFAULT NOW()
+);

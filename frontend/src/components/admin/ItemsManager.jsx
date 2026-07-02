@@ -20,19 +20,19 @@ function Thumbnail({ imageUrl, name }) {
       <img
         src={imageUrl}
         alt={name}
-        className="w-10 h-10 object-cover rounded-lg bg-ink2"
+        className="w-10 h-10 object-cover rounded-lg bg-smoke border border-border"
       />
     );
   }
   return (
-    <div className="w-10 h-10 bg-ink2 rounded-lg flex items-center justify-center">
-      <IconBolt size={14} className="text-amber/40" />
+    <div className="w-10 h-10 bg-smoke border border-border rounded-lg flex items-center justify-center">
+      <IconBolt size={14} className="text-muted/70" />
     </div>
   );
 }
 
 const badgeClass =
-  'inline-block bg-ink text-amber text-[9px] font-bold uppercase tracking-[0.05em] px-2 py-0.5 rounded-full';
+  'inline-block bg-transparent border border-ink text-ink text-[9px] font-bold uppercase tracking-[0.05em] px-2 py-0.5 rounded-full';
 
 export default function ItemsManager() {
   const dispatch = useDispatch();

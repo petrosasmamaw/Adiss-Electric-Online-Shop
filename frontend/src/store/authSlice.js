@@ -1,12 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { isTokenValid } from '../utils/token';
 
 const storedToken = localStorage.getItem('ae_admin_token');
+const validStoredToken = isTokenValid(storedToken) ? storedToken : null;
+if (!validStoredToken) {
+  localStorage.removeItem('ae_admin_token');
+}
 
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
-    token: storedToken,
-    isAuthenticated: !!storedToken,
+    token: validStoredToken,
+    isAuthenticated: !!validStoredToken,
   },
   reducers: {
     setAdminToken(state, action) {

@@ -1,10 +1,11 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { IconBolt, IconPhone, IconShoppingCart } from '@tabler/icons-react';
 import { openContactModal, openOrderModal } from '../store/modalSlice';
-import { formatPrice } from '../utils/formatPrice';
+import { formatPublicPriceRange } from '../utils/formatPrice';
 
 export default function ProductCard({ item }) {
   const dispatch = useDispatch();
+  const priceVisible = useSelector((state) => state.controls.price_visible);
 
   const handleContact = () => {
     dispatch(openContactModal(item));
@@ -15,8 +16,8 @@ export default function ProductCard({ item }) {
   };
 
   return (
-    <article className="bg-white rounded-xl border border-border overflow-hidden cursor-pointer hover:border-amber transition-colors duration-150 flex flex-col">
-      <div className="h-[180px] bg-ink2 relative overflow-hidden rounded-t-xl">
+    <article className="bg-white rounded-xl border border-border overflow-hidden cursor-pointer hover:border-ink transition-colors duration-150 flex flex-col">
+      <div className="h-[180px] bg-smoke relative overflow-hidden rounded-t-xl border-b border-border">
         {item.image_url ? (
           <img
             src={item.image_url}
@@ -25,10 +26,10 @@ export default function ProductCard({ item }) {
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <IconBolt size={48} className="text-amber opacity-30" />
+            <IconBolt size={48} className="text-muted opacity-40" />
           </div>
         )}
-        <span className="absolute top-2 left-2 bg-ink text-amber text-[9px] font-bold uppercase tracking-[0.05em] px-2 py-0.5 rounded-full">
+        <span className="absolute top-2 left-2 bg-transparent border border-ink text-ink text-[9px] font-bold uppercase tracking-[0.05em] px-2 py-0.5 rounded-full">
           {item.category}
         </span>
       </div>
@@ -37,9 +38,15 @@ export default function ProductCard({ item }) {
         <h3 className="font-sans font-semibold text-[13px] text-ink leading-snug line-clamp-2 mb-1">
           {item.name}
         </h3>
-        <p className="font-condensed font-bold text-[20px] text-amber mb-2.5">
-          {formatPrice(item.price)}
-        </p>
+        {priceVisible ? (
+          <p className="font-condensed font-bold text-[20px] text-amber mb-2.5">
+            {formatPublicPriceRange(item.price, item.id)}
+          </p>
+        ) : (
+          <p className="font-sans font-semibold text-[12px] text-muted mb-2.5">
+            Price not available, contact admin
+          </p>
+        )}
       </div>
 
       <div className="flex gap-1.5 px-3.5 pb-3.5">

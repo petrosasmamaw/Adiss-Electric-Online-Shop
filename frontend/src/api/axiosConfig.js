@@ -12,4 +12,23 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const url = error.config?.url || '';
+    const isLoginRequest = url.includes('/auth/login');
+
+    // Token missing/expired/invalid → clear it and send back to login,
+    // but don't redirect when the login attempt itself failed.
+    if (status === 401 && !isLoginRequest) {
+      localStorage.removeItem('ae_admin_token');
+      if (!window.location.pathname.startsWith('/admin/login')) {
+        window.location.assign('/admin/login');
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

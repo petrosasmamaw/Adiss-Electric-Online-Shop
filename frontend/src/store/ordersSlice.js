@@ -37,6 +37,18 @@ export const deleteAdminOrder = createAsyncThunk(
   }
 );
 
+export const updateOrderStatus = createAsyncThunk(
+  'orders/updateOrderStatus',
+  async ({ id, status }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.patch(`/orders/${id}/status`, { status });
+      return data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.error || 'Failed to update status');
+    }
+  }
+);
+
 const ordersSlice = createSlice({
   name: 'orders',
   initialState: {
@@ -47,6 +59,7 @@ const ordersSlice = createSlice({
     adminOrders: [],
     adminLoading: false,
     adminError: null,
+    updatingStatusId: null,
   },
   reducers: {
     resetOrderState(state) {
@@ -86,6 +99,17 @@ const ordersSlice = createSlice({
       })
       .addCase(deleteAdminOrder.fulfilled, (state, action) => {
         state.adminOrders = state.adminOrders.filter((o) => o.id !== action.payload);
+      })
+      .addCase(updateOrderStatus.pending, (state, action) => {
+        state.updatingStatusId = action.meta.arg.id;
+      })
+      .addCase(updateOrderStatus.fulfilled, (state, action) => {
+        state.updatingStatusId = null;
+        const idx = state.adminOrders.findIndex((o) => o.id === action.payload.id);
+        if (idx !== -1) state.adminOrders[idx] = action.payload;
+      })
+      .addCase(updateOrderStatus.rejected, (state) => {
+        state.updatingStatusId = null;
       });
   },
 });
