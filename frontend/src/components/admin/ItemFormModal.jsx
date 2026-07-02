@@ -40,6 +40,8 @@ export default function ItemFormModal() {
   const [errors, setErrors] = useState({});
   const [previewUrl, setPreviewUrl] = useState(null);
   const [imageFile, setImageFile] = useState(null);
+  const [imageMode, setImageMode] = useState('upload');
+  const [urlInput, setUrlInput] = useState('');
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
   const [saveError, setSaveError] = useState(null);
@@ -58,11 +60,14 @@ export default function ItemFormModal() {
           image_url: editItem.image_url || null,
         });
         setPreviewUrl(editItem.image_url || null);
+        setUrlInput(editItem.image_url || '');
       } else {
         setForm(emptyForm);
         setPreviewUrl(null);
+        setUrlInput('');
       }
       setImageFile(null);
+      setImageMode('upload');
       setErrors({});
       setSaveError(null);
       setUploadError(null);
@@ -77,10 +82,28 @@ export default function ItemFormModal() {
     const file = e.target.files?.[0];
     if (!file) return;
     setImageFile(file);
+    setUrlInput('');
+    setForm((prev) => ({ ...prev, image_url: null }));
     setUploadError(null);
     const reader = new FileReader();
     reader.onload = () => setPreviewUrl(reader.result);
     reader.readAsDataURL(file);
+  };
+
+  const handleApplyUrl = () => {
+    const url = urlInput.trim();
+    if (!url) {
+      setUploadError('Image URL is required');
+      return;
+    }
+    if (!/^https?:\/\/.+/i.test(url)) {
+      setUploadError('Please enter a valid image URL (http/https)');
+      return;
+    }
+    setUploadError(null);
+    setImageFile(null);
+    setPreviewUrl(url);
+    setForm((prev) => ({ ...prev, image_url: url }));
   };
 
   const validate = () => {
@@ -116,6 +139,10 @@ export default function ItemFormModal() {
     setUploadError(null);
 
     let imageUrl = isEdit ? form.image_url : null;
+
+    if (imageMode === 'url' && urlInput.trim()) {
+      imageUrl = urlInput.trim();
+    }
 
     if (imageFile) {
       setUploading(true);
@@ -261,6 +288,37 @@ export default function ItemFormModal() {
 
             <div className="mb-4">
               <label className={labelClass}>Image</label>
+              <div className="mb-2 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageMode('upload');
+                    setUploadError(null);
+                  }}
+                  className={`h-9 px-4 rounded-md border text-[12px] font-semibold uppercase tracking-[0.04em] transition-colors duration-150 ${
+                    imageMode === 'upload'
+                      ? 'bg-transparent border-ink text-ink'
+                      : 'bg-white border-border text-muted hover:text-ink'
+                  }`}
+                >
+                  Upload
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImageMode('url');
+                    setUploadError(null);
+                  }}
+                  className={`h-9 px-4 rounded-md border text-[12px] font-semibold uppercase tracking-[0.04em] transition-colors duration-150 ${
+                    imageMode === 'url'
+                      ? 'bg-transparent border-ink text-ink'
+                      : 'bg-white border-border text-muted hover:text-ink'
+                  }`}
+                >
+                  URL
+                </button>
+              </div>
+
               <input
                 id="item-image-input"
                 type="file"
@@ -269,6 +327,25 @@ export default function ItemFormModal() {
                 disabled={uploading || saving}
                 className="hidden"
               />
+
+              {imageMode === 'url' && (
+                <div className="mb-3 flex gap-2">
+                  <input
+                    type="url"
+                    value={urlInput}
+                    onChange={(e) => setUrlInput(e.target.value)}
+                    placeholder="Paste image URL (https://...)"
+                    className={`${inputClass(false)} h-10`}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleApplyUrl}
+                    className="h-10 px-4 rounded-md border border-border text-ink text-[12px] font-semibold uppercase tracking-[0.04em] hover:border-ink transition-colors duration-150"
+                  >
+                    Use
+                  </button>
+                </div>
+              )}
 
               {uploadError && !uploading ? (
                 <div className="bg-[#FDEAEA] rounded-xl h-32 flex flex-col items-center justify-center">
@@ -284,13 +361,28 @@ export default function ItemFormModal() {
               ) : previewUrl ? (
                 <div className="h-32 rounded-xl overflow-hidden relative">
                   <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                  <label
-                    htmlFor="item-image-input"
-                    className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center cursor-pointer"
-                    aria-label="Replace image"
-                  >
-                    <IconX size={12} />
-                  </label>
+                  {imageMode === 'upload' ? (
+                    <label
+                      htmlFor="item-image-input"
+                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center cursor-pointer"
+                      aria-label="Replace image"
+                    >
+                      <IconX size={12} />
+                    </label>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUrlInput('');
+                        setPreviewUrl(null);
+                        setForm((prev) => ({ ...prev, image_url: null }));
+                      }}
+                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center"
+                      aria-label="Clear image URL"
+                    >
+                      <IconX size={12} />
+                    </button>
+                  )}
                   {uploading && (
                     <div className="absolute inset-0 bg-ink/50 rounded-xl flex flex-col items-center justify-center gap-1">
                       <IconLoader2 size={24} className="text-amber animate-spin" />
@@ -299,14 +391,23 @@ export default function ItemFormModal() {
                   )}
                 </div>
               ) : (
-                <label
-                  htmlFor="item-image-input"
-                  className="h-32 rounded-xl border-2 border-dashed border-border bg-smoke flex flex-col items-center justify-center gap-1 hover:border-amber hover:bg-amber-tint transition-colors cursor-pointer"
-                >
-                  <IconUpload size={24} className="text-muted" />
-                  <span className="text-muted text-[12px]">Upload image</span>
-                  <span className="text-[#aaa] text-[11px]">(optional)</span>
-                </label>
+                <>
+                  {imageMode === 'upload' ? (
+                    <label
+                      htmlFor="item-image-input"
+                      className="h-32 rounded-xl border-2 border-dashed border-border bg-smoke flex flex-col items-center justify-center gap-1 hover:border-amber hover:bg-amber-tint transition-colors cursor-pointer"
+                    >
+                      <IconUpload size={24} className="text-muted" />
+                      <span className="text-muted text-[12px]">Upload image</span>
+                      <span className="text-[#aaa] text-[11px]">(optional)</span>
+                    </label>
+                  ) : (
+                    <div className="h-32 rounded-xl border border-border bg-smoke flex flex-col items-center justify-center gap-1 text-center px-4">
+                      <IconUpload size={24} className="text-muted" />
+                      <span className="text-muted text-[12px]">Paste image URL then click Use</span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
