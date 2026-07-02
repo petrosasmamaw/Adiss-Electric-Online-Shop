@@ -51,8 +51,8 @@ async function initDatabase() {
         const price = (item.lower_price + item.upper_price) / 2;
         await client.query(
           `INSERT INTO items (name, price, lower_price, upper_price, category, image_url, description)
-           VALUES ($1, $2, $3, $4, $5, NULL, $6)`,
-          [item.name, price, item.lower_price, item.upper_price, item.category, item.description]
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [item.name, price, item.lower_price, item.upper_price, item.category, item.image_url || null, item.description]
         );
       }
       console.log(`Seeded ${seedItems.length} items.`);
