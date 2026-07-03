@@ -12,26 +12,55 @@ const controlsRoutes = require('./routes/controls');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+function normalizeOrigin(origin) {
+  return origin.replace(/\/$/, '');
+}
+
 const allowedOrigins = (process.env.CORS_ORIGIN || '')
   .split(',')
-  .map((o) => o.trim())
+  .map((o) => normalizeOrigin(o.trim()))
   .filter(Boolean);
+
+function isOriginAllowed(origin) {
+  if (!origin) return true;
+  return allowedOrigins.includes(normalizeOrigin(origin));
+}
 
 const corsOptions = {
   origin(origin, callback) {
-    // Allow non-browser clients (curl, health checks) that send no Origin header.
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error('Not allowed by CORS'));
+    if (!origin || isOriginAllowed(origin)) {
+      return callback(null, true);
+    }
+    console.warn('CORS blocked origin:', origin, '| allowed:', allowedOrigins);
+    return callback(null, false);
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  exposedHeaders: ['Content-Type'],
+  optionsSuccessStatus: 204,
+  maxAge: 86400,
 };
 
+function attachCorsHeaders(req, res) {
+  const origin = req.headers.origin;
+  if (origin && isOriginAllowed(origin)) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Vary', 'Origin');
+  }
+}
+
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: Date.now() });
+  res.json({
+    status: 'ok',
+    timestamp: Date.now(),
+    corsOrigins: allowedOrigins,
+  });
 });
 
 app.use('/api/auth', authRoutes);
@@ -45,11 +74,10 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
+  attachCorsHeaders(req, res);
+
   if (err.message === 'Only image files are allowed') {
     return res.status(400).json({ success: false, error: err.message });
-  }
-  if (err.message === 'Not allowed by CORS') {
-    return res.status(403).json({ success: false, error: 'Origin not allowed' });
   }
   console.error('Unhandled error:', err.message);
   res.status(500).json({ success: false, error: 'Internal server error' });
@@ -57,4 +85,5 @@ app.use((err, req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`Addis Electric API running on http://localhost:${PORT}`);
+  console.log('CORS allowed origins:', allowedOrigins.length ? allowedOrigins : '(none configured)');
 });
