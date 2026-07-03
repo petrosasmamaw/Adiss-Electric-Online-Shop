@@ -9,7 +9,7 @@ export default function CategoryFilter() {
   const { selectedCategory, searchQuery } = useSelector((state) => state.items);
 
   return (
-    <div className="bg-white border-b border-border">
+    <div className="bg-white border-y border-[#E8ECF4] shadow-[0_1px_0_rgba(0,86,179,0.04)]">
       <div className="max-w-6xl mx-auto px-6 py-3 space-y-3">
         <ItemSearchBar
           value={searchQuery}

@@ -24,11 +24,11 @@ export default function Storefront() {
     <main>
       <Hero />
       <div className="px-6">
-        <div className="current-rule" />
+        <div className="section-divider" />
       </div>
       <CategoryFilter />
       <div className="px-6">
-        <div className="current-rule" />
+        <div className="section-divider" />
       </div>
       <ProductGrid />
     </main>
