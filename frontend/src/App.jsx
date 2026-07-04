@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import ContactModal from './components/ContactModal';
 import OrderModal from './components/OrderModal';
 import ToastContainer from './components/ToastContainer';
+import PwaUpdatePrompt from './components/PwaUpdatePrompt';
 import ProtectedRoute from './components/ProtectedRoute';
 import usePageTitle from './hooks/usePageTitle';
 import Storefront from './pages/Storefront';
@@ -21,6 +22,7 @@ function AppContent() {
       {!isAdminRoute && <ContactModal />}
       {!isAdminRoute && <OrderModal />}
       <ToastContainer />
+      <PwaUpdatePrompt />
       <Routes>
         <Route path="/" element={<Storefront />} />
         <Route path="/admin/login" element={<AdminLogin />} />
