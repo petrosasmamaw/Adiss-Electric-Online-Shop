@@ -64,7 +64,7 @@ export default function Navbar() {
                 className="pwa-install-btn"
                 aria-label="Install app"
               >
-                <IconDownload size={12} className="shrink-0" />
+                <IconDownload size={15} className="shrink-0" />
                 <span className="leading-none whitespace-nowrap">Install App</span>
               </button>
             </span>
