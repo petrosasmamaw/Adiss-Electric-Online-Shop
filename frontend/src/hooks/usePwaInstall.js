@@ -7,7 +7,7 @@ function isStandaloneMode() {
   );
 }
 
-function isIosSafari() {
+function isIosDevice() {
   const ua = window.navigator.userAgent;
   return /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
 }
@@ -15,6 +15,7 @@ function isIosSafari() {
 export default function usePwaInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(isStandaloneMode());
+  const [isIos] = useState(isIosDevice);
 
   useEffect(() => {
     if (isStandaloneMode()) {
@@ -47,20 +48,21 @@ export default function usePwaInstall() {
   }, []);
 
   const install = useCallback(async () => {
-    if (!deferredPrompt) return false;
+    if (!deferredPrompt) return 'manual';
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
 
     if (outcome === 'accepted') {
       setDeferredPrompt(null);
-      return true;
+      return 'accepted';
     }
 
-    return false;
+    return 'dismissed';
   }, [deferredPrompt]);
 
-  const canInstall = Boolean(deferredPrompt) && !isInstalled && !isIosSafari();
+  const showInstallButton = !isInstalled;
+  const canNativeInstall = Boolean(deferredPrompt);
 
-  return { canInstall, isInstalled, install };
-}
+  return { showInstallButton, canNativeInstall, isInstalled, isIos, install };
+};

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { IconMenu2, IconX, IconHome, IconLock, IconArrowLeft, IconDownload } from '@tabler/icons-react';
 import BrandLogo from './BrandLogo';
+import PwaInstallModal from './PwaInstallModal';
 import usePwaInstall from '../hooks/usePwaInstall';
 
 const actionButtonClass =
@@ -9,13 +10,23 @@ const actionButtonClass =
 
 export default function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [installModalOpen, setInstallModalOpen] = useState(false);
   const closeDrawer = () => setDrawerOpen(false);
   const location = useLocation();
   const isAdminArea = location.pathname.startsWith('/admin');
-  const { canInstall, install } = usePwaInstall();
+  const { showInstallButton, canNativeInstall, isIos, install } = usePwaInstall();
 
-  const handleInstall = async () => {
-    await install();
+  const handleInstallClick = async () => {
+    if (canNativeInstall) {
+      const result = await install();
+      if (result === 'accepted') {
+        closeDrawer();
+        setInstallModalOpen(false);
+      }
+      return;
+    }
+
+    setInstallModalOpen(true);
     closeDrawer();
   };
 
@@ -25,8 +36,8 @@ export default function Navbar() {
         <BrandLogo />
 
         <div className="hidden md:flex items-center gap-2">
-          {canInstall && (
-            <button type="button" onClick={install} className={actionButtonClass}>
+          {showInstallButton && (
+            <button type="button" onClick={handleInstallClick} className={actionButtonClass}>
               <IconDownload size={15} />
               INSTALL APP
             </button>
@@ -42,15 +53,28 @@ export default function Navbar() {
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={() => setDrawerOpen(true)}
-          className="md:hidden w-11 h-11 -mr-2 flex items-center justify-center rounded-md text-ink hover:bg-smoke transition-colors duration-150"
-          aria-label="Open menu"
-          aria-expanded={drawerOpen}
-        >
-          <IconMenu2 size={22} />
-        </button>
+        <div className="md:hidden flex items-center gap-1">
+          {showInstallButton && (
+            <button
+              type="button"
+              onClick={handleInstallClick}
+              className="inline-flex items-center gap-1 border border-border text-muted hover:border-ink hover:text-ink px-2.5 py-1.5 rounded-md text-[10px] font-semibold uppercase tracking-[0.03em] transition-colors duration-150 min-h-11"
+              aria-label="Install app"
+            >
+              <IconDownload size={16} />
+              <span className="max-[380px]:hidden">App</span>
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="w-11 h-11 -mr-2 flex items-center justify-center rounded-md text-ink hover:bg-smoke transition-colors duration-150"
+            aria-label="Open menu"
+            aria-expanded={drawerOpen}
+          >
+            <IconMenu2 size={22} />
+          </button>
+        </div>
       </nav>
 
       <div className="md:hidden">
@@ -88,10 +112,10 @@ export default function Navbar() {
             >
               <IconHome size={18} /> Shop
             </Link>
-            {canInstall && (
+            {showInstallButton && (
               <button
                 type="button"
-                onClick={handleInstall}
+                onClick={handleInstallClick}
                 className="h-12 flex items-center gap-2.5 px-4 font-sans text-base font-semibold text-ink border-b border-border hover:bg-smoke transition-colors duration-150 text-left"
               >
                 <IconDownload size={18} /> Install App
@@ -107,6 +131,12 @@ export default function Navbar() {
           </nav>
         </aside>
       </div>
+
+      <PwaInstallModal
+        isOpen={installModalOpen}
+        onClose={() => setInstallModalOpen(false)}
+        isIos={isIos}
+      />
     </>
   );
 }
