@@ -39,11 +39,16 @@ export default function ProductCard({ item }) {
           {item.name}
         </h3>
         {priceVisible ? (
-          <p className="font-condensed font-bold text-[20px] text-[#0056B3] mb-2.5">
-            {formatPublicPriceRange(item)}
-          </p>
+          <div className="mt-1 pt-2 border-t border-[#F0F2F6]">
+            <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-0.5">
+              Price + tax
+            </p>
+            <p className="font-condensed font-bold text-[15px] text-[#0056B3] leading-tight">
+              {formatPublicPriceRange(item)}
+            </p>
+          </div>
         ) : (
-          <p className="font-sans font-semibold text-[12px] text-[#6B7280] mb-2.5">
+          <p className="font-sans font-semibold text-[11px] text-[#6B7280] mt-1 pt-2 border-t border-[#F0F2F6]">
             Price not available, contact admin
           </p>
         )}

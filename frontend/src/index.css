@@ -122,10 +122,35 @@ img {
 .hero-section {
   position: relative;
   overflow: hidden;
+  min-height: 22rem;
   background:
-    radial-gradient(ellipse 70% 90% at 78% 18%, rgba(217, 4, 41, 0.22) 0%, transparent 55%),
-    radial-gradient(ellipse 55% 70% at 12% 88%, rgba(39, 60, 117, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse 70% 90% at 78% 18%, rgba(217, 4, 41, 0.24) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 70% at 12% 88%, rgba(39, 60, 117, 0.38) 0%, transparent 50%),
     linear-gradient(148deg, #2B4A8C 0%, #1A3568 38%, #142459 62%, #0E1A38 100%);
+}
+
+@media (min-width: 768px) {
+  .hero-section {
+    min-height: 24rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-section {
+    min-height: 26rem;
+  }
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  left: -10%;
+  top: 20%;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(217, 4, 41, 0.12) 0%, transparent 68%);
+  pointer-events: none;
 }
 
 .hero-section::before {
@@ -145,6 +170,162 @@ img {
   height: 100%;
   pointer-events: none;
   opacity: 0.95;
+}
+
+.hero-brand-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+}
+
+.hero-since-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(217, 4, 41, 0.18) 0%, rgba(255, 255, 255, 0.06) 100%);
+  border: 1px solid rgba(217, 4, 41, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.hero-since-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+  background: rgba(217, 4, 41, 0.2);
+  border: 1px solid rgba(217, 4, 41, 0.4);
+}
+
+@media (min-width: 768px) {
+  .hero-since-badge {
+    padding: 0.35rem 0.85rem;
+  }
+
+  .hero-since-icon {
+    width: 1.65rem;
+    height: 1.65rem;
+  }
+}
+
+.hero-since-copy {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  column-gap: 0.35rem;
+  min-width: 0;
+  line-height: 1;
+}
+
+.hero-phone-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  white-space: nowrap;
+}
+
+.hero-footer-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hero-body-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .hero-body-stack {
+    gap: 1.5rem;
+  }
+}
+
+.hero-description {
+  position: relative;
+  padding-left: 0.85rem;
+  border-left: 2px solid rgba(217, 4, 41, 0.65);
+  color: #C5D4F0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 640px) {
+  .hero-description {
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-description {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    padding-left: 1rem;
+  }
+}
+
+.hero-headline-glow {
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.25);
+}
+
+.hero-visual-mark {
+  position: relative;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+@media (min-width: 1024px) {
+  .hero-visual-mark {
+    display: flex;
+    min-height: 200px;
+    filter: drop-shadow(0 0 40px rgba(217, 4, 41, 0.15));
+  }
+}
+
+.hero-visual-mark::before {
+  content: "";
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hero-visual-mark::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px solid rgba(217, 4, 41, 0.12);
+}
+
+.hero-phone-chip:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
 }
 
 /* ============================================================

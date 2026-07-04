@@ -37,5 +37,8 @@ CREATE TABLE IF NOT EXISTS app_controls (
   id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
   products_enabled BOOLEAN NOT NULL DEFAULT TRUE,
   price_visible BOOLEAN NOT NULL DEFAULT TRUE,
+  contact_phones JSONB NOT NULL DEFAULT '[]'::jsonb,
   updated_at TIMESTAMP DEFAULT NOW()
 );
+
+ALTER TABLE app_controls ADD COLUMN IF NOT EXISTS contact_phones JSONB NOT NULL DEFAULT '[]'::jsonb;

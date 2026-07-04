@@ -8,6 +8,7 @@ const itemsRoutes = require('./routes/items');
 const categoriesRoutes = require('./routes/categories');
 const ordersRoutes = require('./routes/orders');
 const controlsRoutes = require('./routes/controls');
+const { migrateDatabase } = require('./db/migrate');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -83,7 +84,19 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, error: 'Internal server error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Addis Electric API running on http://localhost:${PORT}`);
-  console.log('CORS allowed origins:', allowedOrigins.length ? allowedOrigins : '(none configured)');
-});
+async function startServer() {
+  try {
+    await migrateDatabase();
+    console.log('Database migration check complete.');
+  } catch (err) {
+    console.error('Database migration failed:', err.message);
+    process.exit(1);
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Addis Electric API running on http://localhost:${PORT}`);
+    console.log('CORS allowed origins:', allowedOrigins.length ? allowedOrigins : '(none configured)');
+  });
+}
+
+startServer();

@@ -40,9 +40,18 @@ async function initDatabase() {
     await seedAdmin(client);
 
     await client.query(
-      `INSERT INTO app_controls (id, products_enabled, price_visible)
-       VALUES (1, TRUE, TRUE)
-       ON CONFLICT (id) DO NOTHING`
+      `INSERT INTO app_controls (id, products_enabled, price_visible, contact_phones)
+       VALUES (1, TRUE, TRUE, $1::jsonb)
+       ON CONFLICT (id) DO NOTHING`,
+      [JSON.stringify(['+251911189171', '+25178942424', '+251974732323'])]
+    );
+
+    await client.query(
+      `UPDATE app_controls
+       SET contact_phones = $1::jsonb
+       WHERE id = 1
+         AND (contact_phones IS NULL OR contact_phones = '[]'::jsonb)`,
+      [JSON.stringify(['+251911189171', '+25178942424', '+251974732323'])]
     );
 
     const { rows } = await client.query('SELECT COUNT(*)::int AS count FROM items');

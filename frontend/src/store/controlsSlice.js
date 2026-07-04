@@ -30,6 +30,7 @@ const controlsSlice = createSlice({
   initialState: {
     products_enabled: true,
     price_visible: true,
+    contact_phones: [],
     loading: false,
     saving: false,
     error: null,
@@ -45,6 +46,7 @@ const controlsSlice = createSlice({
         state.loading = false;
         state.products_enabled = action.payload.products_enabled;
         state.price_visible = action.payload.price_visible;
+        state.contact_phones = action.payload.contact_phones || [];
       })
       .addCase(fetchControls.rejected, (state, action) => {
         state.loading = false;
@@ -58,6 +60,7 @@ const controlsSlice = createSlice({
         state.saving = false;
         state.products_enabled = action.payload.products_enabled;
         state.price_visible = action.payload.price_visible;
+        state.contact_phones = action.payload.contact_phones || [];
       })
       .addCase(updateControls.rejected, (state, action) => {
         state.saving = false;
