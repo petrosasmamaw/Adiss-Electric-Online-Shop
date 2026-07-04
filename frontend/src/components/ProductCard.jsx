@@ -32,6 +32,20 @@ export default function ProductCard({ item }) {
         <span className="product-card-badge absolute top-2 left-2 bg-[#E4EAFA] text-[#4A6BB5] text-[9px] font-bold uppercase tracking-[0.05em] px-2 py-0.5 rounded-full transition-colors duration-200">
           {item.category}
         </span>
+        <div
+          className="absolute bottom-2 right-2 flex items-center gap-1 px-1.5 py-1 rounded-md bg-white/92 border border-white/90 shadow-sm pointer-events-none"
+          aria-hidden="true"
+        >
+          <img
+            src="/card.jpg"
+            alt=""
+            className="w-5 h-5 rounded object-cover shrink-0"
+          />
+          <span className="font-condensed font-bold text-[8px] sm:text-[9px] leading-none whitespace-nowrap">
+            <span className="text-ink">Addis </span>
+            <span className="text-amber">Electric</span>
+          </span>
+        </div>
       </div>
 
       <div className="px-3.5 py-3 flex-1 bg-white">

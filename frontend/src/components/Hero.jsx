@@ -58,15 +58,10 @@ export default function Hero() {
                 <span className="hero-since-icon">
                   <IconBolt size={12} className="text-amber" stroke={2.5} />
                 </span>
-                <div className="hero-since-copy">
-                  <span className="text-[9px] md:text-[10px] font-bold uppercase tracking-[0.1em] text-[#F5B8C4] whitespace-nowrap">
-                    Trusted Solutions
-                  </span>
-                  <span className="text-white/30 text-[10px] leading-none">·</span>
-                  <span className="font-condensed font-bold text-[13px] md:text-[15px] text-white whitespace-nowrap">
-                    Solutions since <span className="text-amber">2021</span>
-                  </span>
-                </div>
+                <span className="font-condensed font-bold text-[13px] md:text-[15px] text-white whitespace-nowrap">
+                  Your trusted{' '}
+                  <span className="text-amber">electrical</span> supplier
+                </span>
               </div>
             </div>
 
@@ -75,8 +70,7 @@ export default function Hero() {
             </h1>
 
             <h2 className="mt-3 lg:mt-4 font-condensed font-bold text-[20px] sm:text-[24px] md:text-[28px] lg:text-[30px] xl:text-[32px] leading-[1.08] text-white/95 tracking-[-0.01em]">
-              Your trusted{' '}
-              <span className="text-amber">electrical</span> supplier
+              Solution move since <span className="text-amber">2021</span>
             </h2>
           </div>
 
@@ -100,7 +94,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="hero-body-stack mt-5 lg:mt-3">
+        <div className="hero-body-stack mt-5 lg:mt-1">
           <p className="hero-description font-sans">
             Cables, switches, bulbs and more — quality products for home and business.
           </p>
