@@ -37,10 +37,12 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-2">
           {showInstallButton && (
-            <button type="button" onClick={handleInstallClick} className={actionButtonClass}>
-              <IconDownload size={15} />
-              INSTALL APP
-            </button>
+            <span className="pwa-install-border">
+              <button type="button" onClick={handleInstallClick} className="pwa-install-btn pwa-install-btn--desktop">
+                <IconDownload size={15} className="shrink-0" />
+                INSTALL APP
+              </button>
+            </span>
           )}
           {isAdminArea ? (
             <Link to="/" className={actionButtonClass}>
@@ -55,15 +57,17 @@ export default function Navbar() {
 
         <div className="md:hidden flex items-center gap-1">
           {showInstallButton && (
-            <button
-              type="button"
-              onClick={handleInstallClick}
-              className="inline-flex items-center gap-1 border border-border text-muted hover:border-ink hover:text-ink px-2.5 py-1.5 rounded-md text-[10px] font-semibold uppercase tracking-[0.03em] transition-colors duration-150 min-h-11"
-              aria-label="Install app"
-            >
-              <IconDownload size={16} />
-              <span className="max-[380px]:hidden">App</span>
-            </button>
+            <span className="pwa-install-border shrink-0">
+              <button
+                type="button"
+                onClick={handleInstallClick}
+                className="pwa-install-btn"
+                aria-label="Install app"
+              >
+                <IconDownload size={12} className="shrink-0" />
+                <span className="leading-none whitespace-nowrap">Install App</span>
+              </button>
+            </span>
           )}
           <button
             type="button"
