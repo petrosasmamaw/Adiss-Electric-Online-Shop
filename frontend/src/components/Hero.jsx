@@ -48,7 +48,7 @@ export default function Hero() {
           </h1>
 
           <p className="hero-description font-sans">
-            Cables, switches, bulbs and more — quality products for home and business.
+            Power control and more electrical materials for industrial and home use.
           </p>
 
           <span className="hero-accent-line" aria-hidden="true" />

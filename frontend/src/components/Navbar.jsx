@@ -38,7 +38,7 @@ export default function Navbar() {
           noBorder
           tagline={
             <>
-              Solution move since <span className="text-amber">2021</span>
+              Solution more since <span className="text-amber">2021</span>
             </>
           }
         />
