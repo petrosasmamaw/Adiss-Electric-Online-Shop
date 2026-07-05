@@ -32,20 +32,6 @@ export default function ProductCard({ item }) {
         <span className="product-card-badge absolute top-2 left-2 bg-[#E4EAFA] text-[#4A6BB5] text-[9px] font-bold uppercase tracking-[0.05em] px-2 py-0.5 rounded-full transition-colors duration-200">
           {item.category}
         </span>
-        <div
-          className="absolute bottom-2 right-2 flex items-center gap-1 px-1.5 py-1 rounded-md bg-white/92 border border-white/90 shadow-sm pointer-events-none"
-          aria-hidden="true"
-        >
-          <img
-            src="/card.jpg"
-            alt=""
-            className="w-5 h-5 rounded object-cover shrink-0"
-          />
-          <span className="font-condensed font-bold text-[8px] sm:text-[9px] leading-none whitespace-nowrap">
-            <span className="text-ink">Addis </span>
-            <span className="text-amber">Electric</span>
-          </span>
-        </div>
       </div>
 
       <div className="px-3.5 py-3 flex-1 bg-white">
@@ -53,18 +39,34 @@ export default function ProductCard({ item }) {
           {item.name}
         </h3>
         {priceVisible ? (
-          <div className="mt-1 pt-2 border-t border-[#F0F2F6]">
-            <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-0.5">
-              Price + tax
-            </p>
-            <p className="font-condensed font-bold text-[15px] text-[#0056B3] leading-tight">
-              {formatPublicPriceRange(item)}
-            </p>
+          <div className="mt-1 pt-2 border-t border-[#F0F2F6] flex items-end justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#6B7280] mb-0.5">
+                Price + tax
+              </p>
+              <p className="font-condensed font-bold text-[15px] text-[#0056B3] leading-tight">
+                {formatPublicPriceRange(item)}
+              </p>
+            </div>
+            <img
+              src="/whitelogo.png"
+              alt=""
+              className="product-card-brand-logo shrink-0"
+              aria-hidden="true"
+            />
           </div>
         ) : (
-          <p className="font-sans font-semibold text-[11px] text-[#6B7280] mt-1 pt-2 border-t border-[#F0F2F6]">
-            Price not available, contact admin
-          </p>
+          <div className="mt-1 pt-2 border-t border-[#F0F2F6] flex items-center justify-between gap-2">
+            <p className="font-sans font-semibold text-[11px] text-[#6B7280] min-w-0">
+              Price not available, contact admin
+            </p>
+            <img
+              src="/whitelogo.png"
+              alt=""
+              className="product-card-brand-logo shrink-0"
+              aria-hidden="true"
+            />
+          </div>
         )}
       </div>
 

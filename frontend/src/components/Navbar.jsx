@@ -32,8 +32,16 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-10 h-14 bg-white border-b border-border px-4 md:px-6 flex items-center justify-between">
-        <BrandLogo />
+      <nav className="fixed top-0 left-0 right-0 z-10 min-h-14 py-2.5 bg-white border-b border-border px-4 md:px-6 flex items-center justify-between">
+        <BrandLogo
+          imageSrc="/whitelogo.png"
+          noBorder
+          tagline={
+            <>
+              Solution move since <span className="text-amber">2021</span>
+            </>
+          }
+        />
 
         <div className="hidden md:flex items-center gap-2">
           {showInstallButton && (
@@ -97,7 +105,16 @@ export default function Navbar() {
           aria-modal="true"
         >
           <div className="h-14 flex items-center justify-between px-4 border-b border-border">
-            <BrandLogo small />
+            <BrandLogo
+              small
+              imageSrc="/whitelogo.png"
+              noBorder
+              tagline={
+                <>
+                  Solution move since <span className="text-amber">2021</span>
+                </>
+              }
+            />
             <button
               type="button"
               onClick={closeDrawer}
