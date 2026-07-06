@@ -6,6 +6,7 @@ import { showToast } from '../../store/toastSlice';
 import api from '../../api/axiosConfig';
 import CategoryInput from '../CategoryInput';
 import ModalShell from '../ModalShell';
+import { getItemImages, MAX_ITEM_IMAGES } from '../../utils/itemImages';
 
 function Spinner() {
   return (
@@ -28,8 +29,34 @@ const emptyForm = {
   lower_price: '',
   upper_price: '',
   description: '',
-  image_url: null,
 };
+
+function createImageEntry({ preview, url = null, file = null }) {
+  return {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+    preview,
+    url,
+    file,
+  };
+}
+
+function readFilePreview(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadImageFile(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+  const { data } = await api.post('/items/upload-image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data.url;
+}
 
 export default function ItemFormModal() {
   const dispatch = useDispatch();
@@ -38,8 +65,7 @@ export default function ItemFormModal() {
 
   const [form, setForm] = useState(emptyForm);
   const [errors, setErrors] = useState({});
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [imageFile, setImageFile] = useState(null);
+  const [images, setImages] = useState([]);
   const [imageMode, setImageMode] = useState('upload');
   const [urlInput, setUrlInput] = useState('');
   const [uploading, setUploading] = useState(false);
@@ -47,6 +73,7 @@ export default function ItemFormModal() {
   const [saveError, setSaveError] = useState(null);
 
   const isEdit = !!editItem;
+  const slotsLeft = MAX_ITEM_IMAGES - images.length;
 
   useEffect(() => {
     if (open) {
@@ -57,16 +84,15 @@ export default function ItemFormModal() {
           lower_price: (editItem.lower_price ?? editItem.price)?.toString() || '',
           upper_price: (editItem.upper_price ?? editItem.price)?.toString() || '',
           description: editItem.description || '',
-          image_url: editItem.image_url || null,
         });
-        setPreviewUrl(editItem.image_url || null);
-        setUrlInput(editItem.image_url || '');
+        setImages(
+          getItemImages(editItem).map((url) => createImageEntry({ preview: url, url }))
+        );
       } else {
         setForm(emptyForm);
-        setPreviewUrl(null);
-        setUrlInput('');
+        setImages([]);
       }
-      setImageFile(null);
+      setUrlInput('');
       setImageMode('upload');
       setErrors({});
       setSaveError(null);
@@ -78,16 +104,31 @@ export default function ItemFormModal() {
     dispatch(closeItemModal());
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImageFile(file);
-    setUrlInput('');
-    setForm((prev) => ({ ...prev, image_url: null }));
+  const handleFilesChange = async (e) => {
+    const files = Array.from(e.target.files || []);
+    e.target.value = '';
+    if (!files.length) return;
+
+    const remaining = MAX_ITEM_IMAGES - images.length;
+    if (remaining <= 0) {
+      setUploadError(`You can upload up to ${MAX_ITEM_IMAGES} images per item.`);
+      return;
+    }
+
     setUploadError(null);
-    const reader = new FileReader();
-    reader.onload = () => setPreviewUrl(reader.result);
-    reader.readAsDataURL(file);
+    const selected = files.slice(0, remaining);
+
+    try {
+      const entries = await Promise.all(
+        selected.map(async (file) => {
+          const preview = await readFilePreview(file);
+          return createImageEntry({ preview, file });
+        })
+      );
+      setImages((prev) => [...prev, ...entries]);
+    } catch {
+      setUploadError('Failed to read selected image(s).');
+    }
   };
 
   const handleApplyUrl = () => {
@@ -100,10 +141,19 @@ export default function ItemFormModal() {
       setUploadError('Please enter a valid image URL (http/https)');
       return;
     }
+    if (images.length >= MAX_ITEM_IMAGES) {
+      setUploadError(`You can add up to ${MAX_ITEM_IMAGES} images per item.`);
+      return;
+    }
+
     setUploadError(null);
-    setImageFile(null);
-    setPreviewUrl(url);
-    setForm((prev) => ({ ...prev, image_url: url }));
+    setImages((prev) => [...prev, createImageEntry({ preview: url, url })]);
+    setUrlInput('');
+  };
+
+  const handleRemoveImage = (id) => {
+    setImages((prev) => prev.filter((image) => image.id !== id));
+    setUploadError(null);
   };
 
   const validate = () => {
@@ -137,41 +187,30 @@ export default function ItemFormModal() {
 
     setSaveError(null);
     setUploadError(null);
-
-    let imageUrl = isEdit ? form.image_url : null;
-
-    if (imageMode === 'url' && urlInput.trim()) {
-      imageUrl = urlInput.trim();
-    }
-
-    if (imageFile) {
-      setUploading(true);
-      try {
-        const formData = new FormData();
-        formData.append('image', imageFile);
-        const { data } = await api.post('/items/upload-image', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        imageUrl = data.data.url;
-        setPreviewUrl(imageUrl);
-      } catch {
-        setUploadError('Upload failed');
-        imageUrl = isEdit ? form.image_url : null;
-      } finally {
-        setUploading(false);
-      }
-    }
-
-    const payload = {
-      name: form.name.trim(),
-      category: form.category.trim(),
-      lower_price: parseFloat(form.lower_price),
-      upper_price: parseFloat(form.upper_price),
-      description: form.description.trim() || null,
-      image_url: imageUrl,
-    };
+    setUploading(true);
 
     try {
+      const imageUrls = [];
+
+      for (const image of images) {
+        if (image.file) {
+          const uploadedUrl = await uploadImageFile(image.file);
+          imageUrls.push(uploadedUrl);
+        } else if (image.url) {
+          imageUrls.push(image.url);
+        }
+      }
+
+      const payload = {
+        name: form.name.trim(),
+        category: form.category.trim(),
+        lower_price: parseFloat(form.lower_price),
+        upper_price: parseFloat(form.upper_price),
+        description: form.description.trim() || null,
+        image_urls: imageUrls,
+        image_url: imageUrls[0] || null,
+      };
+
       if (isEdit) {
         await dispatch(updateItem({ id: editItem.id, ...payload })).unwrap();
       } else {
@@ -182,6 +221,8 @@ export default function ItemFormModal() {
       const msg = err || 'Failed to save item';
       setSaveError(msg);
       dispatch(showToast(`Error: ${msg}`, 'error', 5000));
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -197,7 +238,7 @@ export default function ItemFormModal() {
     }`;
 
   return (
-    <ModalShell isOpen={open} onClose={handleClose} maxWidthClass="md:max-w-[480px]">
+    <ModalShell isOpen={open} onClose={handleClose} maxWidthClass="md:max-w-[560px]">
       {({ onClose }) => (
         <div className="bg-white rounded-t-[20px] md:rounded-xl border border-border overflow-hidden max-h-[90vh] overflow-y-auto">
           <div className="md:hidden flex justify-center pt-3 pb-1">
@@ -287,7 +328,13 @@ export default function ItemFormModal() {
             </div>
 
             <div className="mb-4">
-              <label className={labelClass}>Image</label>
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <label className={labelClass}>Images</label>
+                <span className="text-[11px] font-semibold text-muted">
+                  {images.length}/{MAX_ITEM_IMAGES}
+                </span>
+              </div>
+
               <div className="mb-2 flex gap-2">
                 <button
                   type="button"
@@ -323,12 +370,13 @@ export default function ItemFormModal() {
                 id="item-image-input"
                 type="file"
                 accept="image/*"
-                onChange={handleFileChange}
-                disabled={uploading || saving}
+                multiple
+                onChange={handleFilesChange}
+                disabled={uploading || saving || slotsLeft <= 0}
                 className="hidden"
               />
 
-              {imageMode === 'url' && (
+              {imageMode === 'url' && slotsLeft > 0 && (
                 <div className="mb-3 flex gap-2">
                   <input
                     type="url"
@@ -342,72 +390,72 @@ export default function ItemFormModal() {
                     onClick={handleApplyUrl}
                     className="h-10 px-4 rounded-md border border-border text-ink text-[12px] font-semibold uppercase tracking-[0.04em] hover:border-ink transition-colors duration-150"
                   >
-                    Use
+                    Add
                   </button>
                 </div>
               )}
 
-              {uploadError && !uploading ? (
-                <div className="bg-[#FDEAEA] rounded-xl h-32 flex flex-col items-center justify-center">
-                  <IconPhotoX size={24} className="text-danger mb-1" />
-                  <p className="text-danger text-[12px]">Upload failed</p>
-                  <label
-                    htmlFor="item-image-input"
-                    className="text-danger text-[11px] underline cursor-pointer mt-1"
-                  >
-                    Retry
-                  </label>
+              {uploadError && (
+                <div className="mb-3 px-3 py-2 rounded-md bg-[#FDEAEA] border border-danger/20 text-danger text-[12px] font-medium flex items-center gap-2">
+                  <IconPhotoX size={16} className="shrink-0" />
+                  <span>{uploadError}</span>
                 </div>
-              ) : previewUrl ? (
-                <div className="h-32 rounded-xl overflow-hidden relative">
-                  <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                  {imageMode === 'upload' ? (
-                    <label
-                      htmlFor="item-image-input"
-                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center cursor-pointer"
-                      aria-label="Replace image"
+              )}
+
+              {images.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-3">
+                  {images.map((image, index) => (
+                    <div
+                      key={image.id}
+                      className="relative h-24 rounded-lg overflow-hidden border border-border bg-smoke"
                     >
-                      <IconX size={12} />
-                    </label>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setUrlInput('');
-                        setPreviewUrl(null);
-                        setForm((prev) => ({ ...prev, image_url: null }));
-                      }}
-                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 text-white flex items-center justify-center"
-                      aria-label="Clear image URL"
-                    >
-                      <IconX size={12} />
-                    </button>
-                  )}
-                  {uploading && (
-                    <div className="absolute inset-0 bg-ink/50 rounded-xl flex flex-col items-center justify-center gap-1">
-                      <IconLoader2 size={24} className="text-amber animate-spin" />
-                      <span className="text-white text-[11px]">Uploading...</span>
+                      <img
+                        src={image.preview}
+                        alt={`Item image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveImage(image.id)}
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-black/55 text-white flex items-center justify-center hover:bg-black/75 transition-colors"
+                        aria-label={`Remove image ${index + 1}`}
+                      >
+                        <IconX size={12} />
+                      </button>
+                      <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/50 text-white text-[10px] font-bold">
+                        {index + 1}
+                      </span>
                     </div>
-                  )}
+                  ))}
                 </div>
-              ) : (
-                <>
-                  {imageMode === 'upload' ? (
-                    <label
-                      htmlFor="item-image-input"
-                      className="h-32 rounded-xl border-2 border-dashed border-border bg-smoke flex flex-col items-center justify-center gap-1 hover:border-amber hover:bg-amber-tint transition-colors cursor-pointer"
-                    >
-                      <IconUpload size={24} className="text-muted" />
-                      <span className="text-muted text-[12px]">Upload image</span>
-                      <span className="text-[#aaa] text-[11px]">(optional)</span>
-                    </label>
-                  ) : (
-                    <div className="h-32 rounded-xl border border-border bg-smoke flex flex-col items-center justify-center gap-1 text-center px-4">
-                      <IconUpload size={24} className="text-muted" />
-                      <span className="text-muted text-[12px]">Paste image URL then click Use</span>
-                    </div>
-                  )}
-                </>
+              )}
+
+              {slotsLeft > 0 && imageMode === 'upload' && (
+                <label
+                  htmlFor="item-image-input"
+                  className="h-28 rounded-xl border-2 border-dashed border-border bg-smoke flex flex-col items-center justify-center gap-1 hover:border-amber hover:bg-amber-tint transition-colors cursor-pointer"
+                >
+                  <IconUpload size={24} className="text-muted" />
+                  <span className="text-muted text-[12px]">
+                    {images.length === 0 ? 'Upload images' : 'Add more images'}
+                  </span>
+                  <span className="text-[#aaa] text-[11px]">
+                    Up to {slotsLeft} more (max {MAX_ITEM_IMAGES})
+                  </span>
+                </label>
+              )}
+
+              {slotsLeft <= 0 && (
+                <p className="text-[11px] text-muted font-medium">
+                  Maximum of {MAX_ITEM_IMAGES} images reached. Remove one to add another.
+                </p>
+              )}
+
+              {uploading && (
+                <div className="mt-3 flex items-center gap-2 text-[12px] text-muted font-medium">
+                  <IconLoader2 size={16} className="text-amber animate-spin" />
+                  Uploading images...
+                </div>
               )}
             </div>
 

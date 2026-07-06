@@ -1,7 +1,8 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { IconBolt, IconPhone, IconShoppingCart } from '@tabler/icons-react';
+import { IconPhone, IconShoppingCart } from '@tabler/icons-react';
 import { openContactModal, openOrderModal } from '../store/modalSlice';
 import { formatPublicPriceRange } from '../utils/formatPrice';
+import ProductImageCarousel from './ProductImageCarousel';
 
 export default function ProductCard({ item }) {
   const dispatch = useDispatch();
@@ -18,17 +19,7 @@ export default function ProductCard({ item }) {
   return (
     <article className="product-card bg-white rounded-xl border border-[#E6E8ED] overflow-hidden cursor-pointer flex flex-col">
       <div className="product-card-image h-[180px] bg-[#F8F6F5] relative overflow-hidden rounded-t-xl border-b border-[#ECEAE8]">
-        {item.image_url ? (
-          <img
-            src={item.image_url}
-            alt={item.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="product-card-placeholder w-full h-full flex items-center justify-center">
-            <IconBolt size={48} className="text-[#9AA8C4] opacity-50" />
-          </div>
-        )}
+        <ProductImageCarousel item={item} />
         <span className="product-card-badge absolute top-2 left-2 bg-[#E4EAFA] text-[#4A6BB5] text-[9px] font-bold uppercase tracking-[0.05em] px-2 py-0.5 rounded-full transition-colors duration-200">
           {item.category}
         </span>

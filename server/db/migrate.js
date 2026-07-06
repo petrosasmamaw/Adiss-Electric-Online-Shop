@@ -25,6 +25,23 @@ async function migrateDatabase() {
        )`,
     [JSON.stringify(DEFAULT_CONTACT_PHONES)]
   );
+
+  await pool.query(`
+    ALTER TABLE items
+    ADD COLUMN IF NOT EXISTS image_urls JSONB NOT NULL DEFAULT '[]'::jsonb
+  `);
+
+  await pool.query(`
+    UPDATE items
+    SET image_urls = jsonb_build_array(image_url)
+    WHERE image_url IS NOT NULL
+      AND image_url <> ''
+      AND (
+        image_urls IS NULL
+        OR image_urls = '[]'::jsonb
+        OR jsonb_array_length(image_urls) = 0
+      )
+  `);
 }
 
 module.exports = { migrateDatabase };

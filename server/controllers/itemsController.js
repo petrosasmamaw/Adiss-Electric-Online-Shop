@@ -1,4 +1,5 @@
 const pool = require('../db/pool');
+const { sanitizeImageUrls, normalizeItemRow } = require('../utils/itemImages');
 
 async function getItems(req, res) {
   try {
@@ -14,7 +15,10 @@ async function getItems(req, res) {
       result = await pool.query('SELECT * FROM items ORDER BY created_at DESC');
     }
 
-    return res.json({ success: true, data: result.rows });
+    return res.json({
+      success: true,
+      data: result.rows.map(normalizeItemRow),
+    });
   } catch (err) {
     console.error('getItems error:', err.message);
     return res.status(500).json({ success: false, error: 'Failed to fetch items' });
@@ -23,7 +27,7 @@ async function getItems(req, res) {
 
 async function createItem(req, res) {
   try {
-    const { name, lower_price, upper_price, category, image_url, description } = req.body;
+    const { name, lower_price, upper_price, category, image_url, image_urls, description } = req.body;
 
     if (!name || lower_price == null || upper_price == null || !category) {
       return res.status(400).json({
@@ -41,16 +45,26 @@ async function createItem(req, res) {
       });
     }
 
+    const urls = sanitizeImageUrls(image_urls, image_url);
     const price = (low + high) / 2;
 
     const result = await pool.query(
-      `INSERT INTO items (name, price, lower_price, upper_price, category, image_url, description)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO items (name, price, lower_price, upper_price, category, image_url, image_urls, description)
+       VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8)
        RETURNING *`,
-      [name, price, low, high, category, image_url || null, description || null]
+      [
+        name,
+        price,
+        low,
+        high,
+        category,
+        urls[0] || null,
+        JSON.stringify(urls),
+        description || null,
+      ]
     );
 
-    return res.status(201).json({ success: true, data: result.rows[0] });
+    return res.status(201).json({ success: true, data: normalizeItemRow(result.rows[0]) });
   } catch (err) {
     console.error('createItem error:', err.message);
     return res.status(500).json({ success: false, error: 'Failed to create item' });
@@ -60,7 +74,7 @@ async function createItem(req, res) {
 async function updateItem(req, res) {
   try {
     const { id } = req.params;
-    const { name, lower_price, upper_price, category, image_url, description } = req.body;
+    const { name, lower_price, upper_price, category, image_url, image_urls, description } = req.body;
 
     if (!name || lower_price == null || upper_price == null || !category) {
       return res.status(400).json({
@@ -78,21 +92,39 @@ async function updateItem(req, res) {
       });
     }
 
+    const urls = sanitizeImageUrls(image_urls, image_url);
     const price = (low + high) / 2;
 
     const result = await pool.query(
       `UPDATE items
-       SET name = $1, price = $2, lower_price = $3, upper_price = $4, category = $5, image_url = $6, description = $7
-       WHERE id = $8
+       SET name = $1,
+           price = $2,
+           lower_price = $3,
+           upper_price = $4,
+           category = $5,
+           image_url = $6,
+           image_urls = $7::jsonb,
+           description = $8
+       WHERE id = $9
        RETURNING *`,
-      [name, price, low, high, category, image_url || null, description || null, id]
+      [
+        name,
+        price,
+        low,
+        high,
+        category,
+        urls[0] || null,
+        JSON.stringify(urls),
+        description || null,
+        id,
+      ]
     );
 
     if (result.rows.length === 0) {
       return res.status(404).json({ success: false, error: 'Item not found' });
     }
 
-    return res.json({ success: true, data: result.rows[0] });
+    return res.json({ success: true, data: normalizeItemRow(result.rows[0]) });
   } catch (err) {
     console.error('updateItem error:', err.message);
     return res.status(500).json({ success: false, error: 'Failed to update item' });
@@ -112,7 +144,7 @@ async function deleteItem(req, res) {
       return res.status(404).json({ success: false, error: 'Item not found' });
     }
 
-    return res.json({ success: true, data: result.rows[0] });
+    return res.json({ success: true, data: normalizeItemRow(result.rows[0]) });
   } catch (err) {
     console.error('deleteItem error:', err.message);
     return res.status(500).json({ success: false, error: 'Failed to delete item' });

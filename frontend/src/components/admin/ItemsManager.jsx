@@ -10,6 +10,7 @@ import { fetchCategories } from '../../store/categoriesSlice';
 import { showToast } from '../../store/toastSlice';
 import { formatPrice, getPriceRangeFromItem } from '../../utils/formatPrice';
 import { filterItems } from '../../utils/filterItems';
+import { getItemImages } from '../../utils/itemImages';
 import CategoryPills from '../CategoryPills';
 import ItemSearchBar from '../ItemSearchBar';
 import ItemFormModal from './ItemFormModal';
@@ -134,7 +135,7 @@ export default function ItemsManager() {
                     className="border-b border-border hover:bg-smoke transition-colors duration-100"
                   >
                     <td className="px-4 py-3">
-                      <Thumbnail imageUrl={item.image_url} name={item.name} />
+                      <Thumbnail imageUrl={getItemImages(item)[0]} name={item.name} />
                     </td>
                     <td className="px-4 py-3 font-semibold text-[13px] text-ink">{item.name}</td>
                     <td className="px-4 py-3">
@@ -174,7 +175,7 @@ export default function ItemsManager() {
             {filteredItems.map((item) => (
               <div key={item.id} className="bg-white rounded-xl border border-border p-4">
                 <div className="flex gap-3 mb-3">
-                  <Thumbnail imageUrl={item.image_url} name={item.name} />
+                  <Thumbnail imageUrl={getItemImages(item)[0]} name={item.name} />
                   <div className="flex-1 min-w-0">
                     <p className="font-sans font-semibold text-[14px] text-ink truncate">
                       {item.name}
