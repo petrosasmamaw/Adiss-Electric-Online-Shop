@@ -9,7 +9,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['card.jpg', 'favicon.svg', 'pwa/apple-touch-icon.png'],
+      includeAssets: ['card.jpg', 'whitelogo.png', 'pwa/apple-touch-icon.png'],
       manifest: {
         name: 'Addis Electric',
         short_name: 'Addis Electric',
