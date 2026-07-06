@@ -35,7 +35,7 @@ A full-stack monorepo for **Addis Electric**, an online shop for electrical good
 | `ADMIN_EMAIL`          | Admin login email                                | `admin@addiselectric.com`            |
 | `ADMIN_PASSWORD`       | Admin login password (hashed in DB on init)      | `your_secure_password`               |
 | `NODE_ENV`             | `development` or `production`                    | `production`                         |
-| `CORS_ORIGIN`          | Frontend URL (production only)                   | `https://your-app.vercel.app`        |
+| `CORS_ORIGIN`          | Allowed frontend origins (comma-separated)       | `https://app.vercel.app,https://example.com,https://www.example.com` |
 
 ### Frontend (`frontend/.env`)
 

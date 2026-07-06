@@ -9,29 +9,28 @@ const categoriesRoutes = require('./routes/categories');
 const ordersRoutes = require('./routes/orders');
 const controlsRoutes = require('./routes/controls');
 const { migrateDatabase } = require('./db/migrate');
+const {
+  getAllowedOrigins,
+  isOriginAllowed,
+  normalizeOrigin,
+} = require('./utils/corsOrigins');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-function normalizeOrigin(origin) {
-  return origin.replace(/\/$/, '');
-}
-
-const allowedOrigins = (process.env.CORS_ORIGIN || '')
-  .split(',')
-  .map((o) => normalizeOrigin(o.trim()))
-  .filter(Boolean);
-
-function isOriginAllowed(origin) {
-  if (!origin) return true;
-  return allowedOrigins.includes(normalizeOrigin(origin));
-}
+const allowedOrigins = getAllowedOrigins();
 
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || isOriginAllowed(origin)) {
+    if (!origin) {
       return callback(null, true);
     }
+
+    const normalized = normalizeOrigin(origin);
+    if (isOriginAllowed(origin, allowedOrigins)) {
+      return callback(null, normalized);
+    }
+
     console.warn('CORS blocked origin:', origin, '| allowed:', allowedOrigins);
     return callback(null, false);
   },
@@ -45,8 +44,8 @@ const corsOptions = {
 
 function attachCorsHeaders(req, res) {
   const origin = req.headers.origin;
-  if (origin && isOriginAllowed(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
+  if (origin && isOriginAllowed(origin, allowedOrigins)) {
+    res.setHeader('Access-Control-Allow-Origin', normalizeOrigin(origin));
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Vary', 'Origin');
   }
