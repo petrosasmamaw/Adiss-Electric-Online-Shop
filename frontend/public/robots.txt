@@ -1,0 +1,7 @@
+# Adiss Electric Shop / Addis Electric Shop Online
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+
+Sitemap: https://addiselectricshop.online/sitemap.xml

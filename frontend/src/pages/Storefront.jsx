@@ -31,6 +31,13 @@ export default function Storefront() {
         <div className="section-divider" />
       </div>
       <ProductGrid />
+      <footer className="px-6 pb-10 pt-2">
+        <p className="text-center text-[11px] text-muted leading-relaxed max-w-2xl mx-auto">
+          <strong className="font-semibold text-ink2">Adiss Electric Shop</strong> — Addis Electric Shop
+          Online in Ethiopia. Shop Adiss Electric and Addis Electric products: cables, switches, bulbs and
+          more.
+        </p>
+      </footer>
     </main>
   );
 }

@@ -42,13 +42,15 @@ A full-stack monorepo for **Addis Electric**, an online shop for electrical good
 | Variable            | Description                          | Example                          |
 |---------------------|--------------------------------------|----------------------------------|
 | `VITE_API_URL`      | Backend API base URL                 | `http://localhost:5000/api`      |
+| `VITE_SITE_URL`     | Public site URL (SEO, sitemap)       | `https://addiselectricshop.online` |
 | `VITE_CONTACT_PHONE`| Shop contact number for modal        | `+251 91 000 0000`               |
 
 ### Frontend Production (`frontend/.env.production`)
 
 | Variable       | Description              | Example                              |
 |----------------|--------------------------|--------------------------------------|
-| `VITE_API_URL` | Production API base URL  | `https://your-backend.railway.app/api` |
+| `VITE_API_URL` | Production API base URL  | `https://your-backend.onrender.com/api` |
+| `VITE_SITE_URL` | Canonical public site URL | `https://addiselectricshop.online` |
 
 ---
 

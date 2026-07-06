@@ -6,11 +6,12 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, '..');
 const src = path.join(root, 'public', 'whitelogo.png');
-const outDir = path.join(root, 'public', 'pwa');
+const publicDir = path.join(root, 'public');
+const outDir = path.join(publicDir, 'pwa');
 
 const INK = { r: 15, g: 23, b: 42, alpha: 1 };
 
-async function writeSquareIcon(name, size, { maskable = false } = {}) {
+async function writeSquareIcon(outputPath, size, { maskable = false } = {}) {
   const logoSize = maskable ? Math.round(size * 0.62) : Math.round(size * 0.72);
   const logo = await sharp(src)
     .resize(logoSize, logoSize, { fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
@@ -27,7 +28,7 @@ async function writeSquareIcon(name, size, { maskable = false } = {}) {
   })
     .composite([{ input: logo, gravity: 'center' }])
     .png()
-    .toFile(path.join(outDir, name));
+    .toFile(outputPath);
 }
 
 async function main() {
@@ -37,12 +38,16 @@ async function main() {
 
   fs.mkdirSync(outDir, { recursive: true });
 
-  await writeSquareIcon('apple-touch-icon.png', 180);
-  await writeSquareIcon('pwa-192x192.png', 192);
-  await writeSquareIcon('pwa-512x512.png', 512);
-  await writeSquareIcon('pwa-512x512-maskable.png', 512, { maskable: true });
+  await writeSquareIcon(path.join(outDir, 'apple-touch-icon.png'), 180);
+  await writeSquareIcon(path.join(outDir, 'pwa-192x192.png'), 192);
+  await writeSquareIcon(path.join(outDir, 'pwa-512x512.png'), 512);
+  await writeSquareIcon(path.join(outDir, 'pwa-512x512-maskable.png'), 512, { maskable: true });
 
-  console.log('PWA icons generated in public/pwa/ from whitelogo.png');
+  await writeSquareIcon(path.join(publicDir, 'favicon-32x32.png'), 32);
+  await writeSquareIcon(path.join(publicDir, 'favicon-48x48.png'), 48);
+  await writeSquareIcon(path.join(publicDir, 'favicon-192x192.png'), 192);
+
+  console.log('PWA and favicon assets generated from whitelogo.png');
 }
 
 main().catch((err) => {

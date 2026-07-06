@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "pwa:icons": "node scripts/generate-pwa-icons.js",
-    "build": "npm run pwa:icons && vite build",
+    "seo:generate": "node scripts/generate-seo-files.js",
+    "build": "npm run pwa:icons && npm run seo:generate && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
