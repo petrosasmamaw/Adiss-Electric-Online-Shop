@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import { setAdminToken } from '../store/authSlice';
@@ -112,6 +112,15 @@ export default function AdminLogin() {
                 {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
               </button>
             </div>
+          </div>
+
+          <div className="mb-1 text-right">
+            <Link
+              to="/admin/forgot-password"
+              className="text-[12px] font-semibold text-amber hover:text-amber2"
+            >
+              Forgot password?
+            </Link>
           </div>
 
           <button

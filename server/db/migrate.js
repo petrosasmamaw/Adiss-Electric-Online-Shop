@@ -42,6 +42,22 @@ async function migrateDatabase() {
         OR jsonb_array_length(image_urls) = 0
       )
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      id SERIAL PRIMARY KEY,
+      admin_id INTEGER NOT NULL REFERENCES admins(id) ON DELETE CASCADE,
+      token_hash VARCHAR(255) NOT NULL,
+      expires_at TIMESTAMP NOT NULL,
+      used_at TIMESTAMP,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_admin_id
+    ON password_reset_tokens(admin_id)
+  `);
 }
 
 module.exports = { migrateDatabase };

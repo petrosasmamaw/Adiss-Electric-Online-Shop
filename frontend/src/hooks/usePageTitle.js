@@ -11,6 +11,12 @@ import {
 
 const ADMIN_TITLE = `Admin — ${SITE_NAME}`;
 
+const TITLES = {
+  admin: ADMIN_TITLE,
+  forgotPassword: `Forgot Password — ${SITE_NAME}`,
+  resetPassword: `Reset Password — ${SITE_NAME}`,
+};
+
 function setMetaTag(attr, key, content) {
   if (!content) return;
 
@@ -28,7 +34,19 @@ export default function usePageTitle() {
   const isAdmin = location.pathname.startsWith('/admin');
 
   useEffect(() => {
-    document.title = isAdmin ? ADMIN_TITLE : SITE_TITLE;
+    if (location.pathname === '/admin/forgot-password') {
+      document.title = TITLES.forgotPassword;
+      setMetaTag('name', 'robots', 'noindex, nofollow');
+      return;
+    }
+
+    if (location.pathname === '/admin/reset-password') {
+      document.title = TITLES.resetPassword;
+      setMetaTag('name', 'robots', 'noindex, nofollow');
+      return;
+    }
+
+    document.title = isAdmin ? TITLES.admin : SITE_TITLE;
 
     if (isAdmin) {
       setMetaTag('name', 'robots', 'noindex, nofollow');

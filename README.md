@@ -36,6 +36,10 @@ A full-stack monorepo for **Addis Electric**, an online shop for electrical good
 | `ADMIN_PASSWORD`       | Admin login password (hashed in DB on init)      | `your_secure_password`               |
 | `NODE_ENV`             | `development` or `production`                    | `production`                         |
 | `CORS_ORIGIN`          | Allowed frontend origins (comma-separated)       | `https://app.vercel.app,https://example.com,https://www.example.com` |
+| `BREVO_API_KEY`        | Brevo (Sendinblue) API key for password reset mail | `xkeysib-...`                        |
+| `BREVO_SENDER_EMAIL`   | Verified sender email in Brevo                   | `addiselectric14@gmail.com`          |
+| `BREVO_SENDER_NAME`    | Sender display name                              | `Adiss Electric Shop`                |
+| `FRONTEND_URL`         | Public frontend URL used in reset email links    | `https://addiselectricshop.online`   |
 
 ### Frontend (`frontend/.env`)
 
