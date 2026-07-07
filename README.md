@@ -64,7 +64,7 @@ A full-stack monorepo for **Addis Electric**, an online shop for electrical good
 
 1. Create a free PostgreSQL database on [Neon](https://neon.tech).
 2. Copy the connection string into `server/.env` as `DATABASE_URL`.
-3. Initialize tables and seed data:
+3. Initialize tables and admin accounts:
 
 ```bash
 cd server
@@ -148,7 +148,7 @@ Use the Neon connection string as `DATABASE_URL`. Run `npm run db:init` once aft
 |-----------------|--------------------------------|
 | `npm start`     | Start production server        |
 | `npm run dev`   | Start with file watch          |
-| `npm run db:init` | Create tables + seed data    |
+| `npm run db:init` | Create tables + admin accounts |
 
 ### Frontend
 

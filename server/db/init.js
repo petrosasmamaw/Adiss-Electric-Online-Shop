@@ -2,42 +2,61 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const pool = require('./pool');
-const seedItems = require('./seed');
+const { migrateDatabase } = require('./migrate');
 
-async function seedAdmin(client) {
-  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD;
+function getAdminSeedList() {
+  return [
+    {
+      email: process.env.ADMIN_EMAIL?.trim().toLowerCase(),
+      password: process.env.ADMIN_PASSWORD,
+    },
+    {
+      email: process.env.ADMIN_EMAIL_2?.trim().toLowerCase(),
+      password: process.env.ADMIN_PASSWORD_2,
+    },
+  ].filter((admin) => admin.email && admin.password);
+}
 
-  if (!email || !password) {
-    console.warn('ADMIN_EMAIL and ADMIN_PASSWORD not set — skipping admin seed.');
+async function seedAdmins(client) {
+  const admins = getAdminSeedList();
+
+  if (admins.length === 0) {
+    console.warn('No admin accounts configured — set ADMIN_EMAIL/PASSWORD and ADMIN_EMAIL_2/PASSWORD_2.');
     return;
   }
 
-  const { rows } = await client.query('SELECT COUNT(*)::int AS count FROM admins');
-  if (rows[0].count > 0) {
-    console.log(`Admins table already has ${rows[0].count} row(s) — skipping admin seed.`);
-    return;
-  }
+  for (const { email, password } of admins) {
+    const { rows } = await client.query('SELECT id FROM admins WHERE email = $1', [email]);
+    const passwordHash = await bcrypt.hash(password, 12);
 
-  const passwordHash = await bcrypt.hash(password, 12);
-  await client.query(
-    'INSERT INTO admins (email, password_hash) VALUES ($1, $2)',
-    [email, passwordHash]
-  );
-  console.log(`Seeded admin: ${email}`);
+    if (rows.length === 0) {
+      await client.query('INSERT INTO admins (email, password_hash) VALUES ($1, $2)', [
+        email,
+        passwordHash,
+      ]);
+      console.log(`Seeded admin: ${email}`);
+    } else {
+      await client.query('UPDATE admins SET password_hash = $1 WHERE email = $2', [
+        passwordHash,
+        email,
+      ]);
+      console.log(`Updated admin: ${email}`);
+    }
+  }
 }
 
 async function initDatabase() {
   const client = await pool.connect();
 
   try {
-    const schema = fs.readFileSync(
-      path.join(__dirname, 'schema.sql'),
-      'utf8'
-    );
+    const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
     await client.query(schema);
+    console.log('Schema applied.');
 
-    await seedAdmin(client);
+    await migrateDatabase();
+    console.log('Migrations applied.');
+
+    await seedAdmins(client);
 
     await client.query(
       `INSERT INTO app_controls (id, products_enabled, price_visible, contact_phones)
@@ -54,27 +73,8 @@ async function initDatabase() {
       [JSON.stringify(['+251911189171', '+25178942424', '+251974732323'])]
     );
 
-    const { rows } = await client.query('SELECT COUNT(*)::int AS count FROM items');
-    if (rows[0].count === 0) {
-      for (const item of seedItems) {
-        const price = (item.lower_price + item.upper_price) / 2;
-        await client.query(
-          `INSERT INTO items (name, price, lower_price, upper_price, category, image_url, description)
-           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-          [item.name, price, item.lower_price, item.upper_price, item.category, item.image_url || null, item.description]
-        );
-      }
-      console.log(`Seeded ${seedItems.length} items.`);
-    } else {
-      console.log(`Items table already has ${rows[0].count} rows — skipping seed.`);
-    }
-
-    await client.query(
-      `UPDATE items
-       SET lower_price = COALESCE(lower_price, price),
-           upper_price = COALESCE(upper_price, price)`
-    );
-
+    const { rows: adminRows } = await client.query('SELECT email FROM admins ORDER BY id');
+    console.log(`Admin accounts (${adminRows.length}):`, adminRows.map((row) => row.email).join(', '));
     console.log('Database initialized successfully.');
   } finally {
     client.release();
