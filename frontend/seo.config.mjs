@@ -39,11 +39,12 @@ export const SITE_OG_DESCRIPTION =
   'Addis Electric & Adiss Electric Shop Online — trusted electrical supplier in Ethiopia. Cables, switches, bulbs and more.';
 
 export const DEFAULT_SITE_URL = 'https://addiselectricshop.online';
+export const SITE_OG_IMAGE_PATH = '/card.jpg';
 
 export const GOOGLE_SITE_VERIFICATION = 'googlef09ba43e106a21ff';
 
 export function buildStructuredData(siteUrl) {
-  const image = `${siteUrl}/pwa/pwa-512x512.png`;
+  const image = `${siteUrl}${SITE_OG_IMAGE_PATH}`;
 
   return [
     {

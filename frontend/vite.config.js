@@ -8,6 +8,7 @@ import {
   SITE_DESCRIPTION,
   SITE_KEYWORDS,
   SITE_NAME,
+  SITE_OG_IMAGE_PATH,
   SITE_OG_DESCRIPTION,
   SITE_SHORT_NAME,
   SITE_TITLE,
@@ -16,6 +17,7 @@ import {
 
 function seoHtmlPlugin(siteUrl) {
   const structuredDataJson = JSON.stringify(buildStructuredData(siteUrl));
+  const siteOgImage = `${siteUrl}${SITE_OG_IMAGE_PATH}`;
 
   return {
     name: 'html-seo-inject',
@@ -27,6 +29,7 @@ function seoHtmlPlugin(siteUrl) {
         .replaceAll('%%SITE_KEYWORDS%%', SITE_KEYWORDS)
         .replaceAll('%%SITE_NAME%%', SITE_NAME)
         .replaceAll('%%SITE_URL%%', siteUrl)
+        .replaceAll('%%SITE_OG_IMAGE%%', siteOgImage)
         .replaceAll('%%GOOGLE_SITE_VERIFICATION%%', GOOGLE_SITE_VERIFICATION)
         .replace('%%STRUCTURED_DATA_JSON%%', structuredDataJson);
     },
