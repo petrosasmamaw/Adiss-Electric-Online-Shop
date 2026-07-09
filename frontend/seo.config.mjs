@@ -1,5 +1,5 @@
-export const SITE_NAME = 'Adiss Electric Shop';
-export const SITE_SHORT_NAME = 'Adiss Electric';
+export const SITE_NAME = 'Addis Electric Shop';
+export const SITE_SHORT_NAME = 'Addis Electric';
 
 export const SITE_ALTERNATE_NAMES = [
   'Adiss Electric',
@@ -30,13 +30,13 @@ export const SITE_KEYWORDS = [
 ].join(', ');
 
 export const SITE_TITLE =
-  'Adiss Electric Shop | Addis Electric Online — Electrical Supplier Ethiopia';
+  'Addis Electric Shop | Addis Electric Online — Electrical Supplier Ethiopia';
 
 export const SITE_DESCRIPTION =
-  'Adiss Electric Shop — Addis Electric Shop Online in Ethiopia. Your trusted electrical supplier for cables, switches, bulbs and quality products for home and business. Shop Adiss Electric and Addis Electric online.';
+  'Addis Electric Shop — Addis Electric Shop Online in Ethiopia. Your trusted electrical supplier for cables, switches, bulbs and quality products for home and business. Shop Addis Electric and Adiss Electric online.';
 
 export const SITE_OG_DESCRIPTION =
-  'Adiss Electric & Addis Electric Shop Online — trusted electrical supplier in Ethiopia. Cables, switches, bulbs and more.';
+  'Addis Electric & Adiss Electric Shop Online — trusted electrical supplier in Ethiopia. Cables, switches, bulbs and more.';
 
 export const DEFAULT_SITE_URL = 'https://addiselectricshop.online';
 
