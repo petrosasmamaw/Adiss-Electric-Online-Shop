@@ -1,4 +1,5 @@
 const pool = require('../db/pool');
+const { notifyAdminsNewOrder } = require('../services/pushNotifications');
 
 async function getOrders(req, res) {
   try {
@@ -42,7 +43,13 @@ async function createOrder(req, res) {
       [item_id, item.name, customer_phone, customer_name, customer_address, qty, total_price]
     );
 
-    return res.status(201).json({ success: true, data: result.rows[0] });
+    const order = result.rows[0];
+
+    notifyAdminsNewOrder(order).catch((pushErr) => {
+      console.error('notifyAdminsNewOrder error:', pushErr.message);
+    });
+
+    return res.status(201).json({ success: true, data: order });
   } catch (err) {
     console.error('createOrder error:', err.message);
     return res.status(500).json({ success: false, error: 'Failed to create order' });

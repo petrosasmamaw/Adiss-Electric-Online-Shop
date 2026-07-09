@@ -63,6 +63,16 @@ async function migrateDatabase() {
     ALTER TABLE orders
     ADD COLUMN IF NOT EXISTS admin_seen_at TIMESTAMP
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS push_subscriptions (
+      id SERIAL PRIMARY KEY,
+      endpoint TEXT NOT NULL UNIQUE,
+      p256dh TEXT NOT NULL,
+      auth TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
 }
 
 module.exports = { migrateDatabase };

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { IconPackage, IconClipboardList, IconLogout, IconArrowLeft, IconAdjustments } from '@tabler/icons-react';
@@ -5,6 +6,7 @@ import { logout } from '../../store/authSlice';
 import BrandLogo from '../BrandLogo';
 import AdminNotificationBell from './AdminNotificationBell';
 import useAdminOrderNotifications from '../../hooks/useAdminOrderNotifications';
+import { enableOrderNotifications, isNotificationSupported } from '../../utils/browserNotifications';
 
 const navItems = [
   { to: '/admin/dashboard/control', label: 'Control', Icon: IconAdjustments, end: false },
@@ -16,6 +18,13 @@ export default function AdminLayout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { unseenCount, unseenOrders, seenOrders } = useAdminOrderNotifications();
+
+  useEffect(() => {
+    if (!isNotificationSupported()) return undefined;
+
+    enableOrderNotifications({ requestIfNeeded: true });
+    return undefined;
+  }, []);
 
   const handleLogout = () => {
     dispatch(logout());

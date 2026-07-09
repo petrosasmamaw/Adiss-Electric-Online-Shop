@@ -6,8 +6,8 @@ import { setAdminToken } from '../store/authSlice';
 import { showToast } from '../store/toastSlice';
 import api from '../api/axiosConfig';
 import {
+  enableOrderNotifications,
   isNotificationSupported,
-  requestNotificationPermission,
 } from '../utils/browserNotifications';
 
 function Spinner() {
@@ -51,10 +51,12 @@ export default function AdminLogin() {
       dispatch(setAdminToken(data.data.token));
 
       if (enableNotifications && isNotificationSupported()) {
-        const permission = await requestNotificationPermission();
-        if (permission === 'granted') {
+        const result = await enableOrderNotifications({ requestIfNeeded: true });
+        if (result.permission === 'granted' && result.push) {
+          dispatch(showToast('Order notifications enabled for web and PWA.', 'success'));
+        } else if (result.permission === 'granted') {
           dispatch(showToast('Order notifications enabled.', 'success'));
-        } else if (permission === 'denied') {
+        } else if (result.permission === 'denied') {
           dispatch(showToast('Notifications blocked in browser settings.', 'info', 4000));
         }
       }
@@ -152,7 +154,7 @@ export default function AdminLogin() {
                   Enable order notifications
                 </span>
                 <span className="block text-[11px] text-muted mt-1 leading-relaxed">
-                  Get instant alerts when a customer places a new order.
+                  Get instant alerts in the browser and installed PWA, even when the app is in the background.
                 </span>
               </span>
             </label>

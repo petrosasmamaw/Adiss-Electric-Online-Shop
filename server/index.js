@@ -8,6 +8,7 @@ const itemsRoutes = require('./routes/items');
 const categoriesRoutes = require('./routes/categories');
 const ordersRoutes = require('./routes/orders');
 const controlsRoutes = require('./routes/controls');
+const pushRoutes = require('./routes/push');
 const { migrateDatabase } = require('./db/migrate');
 const {
   getAllowedOrigins,
@@ -68,6 +69,7 @@ app.use('/api/items', itemsRoutes);
 app.use('/api/categories', categoriesRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/controls', controlsRoutes);
+app.use('/api/push', pushRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ success: false, error: 'Route not found' });
