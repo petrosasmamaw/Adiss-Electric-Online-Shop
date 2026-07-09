@@ -4,7 +4,7 @@ import { getItemImages } from '../utils/itemImages';
 
 const SLIDE_INTERVAL_MS = 3000;
 
-export default function ProductImageCarousel({ item }) {
+export default function ProductImageCarousel({ item, onImageClick, paused = false }) {
   const images = getItemImages(item);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -13,14 +13,19 @@ export default function ProductImageCarousel({ item }) {
   }, [item.id, images.join('|')]);
 
   useEffect(() => {
-    if (images.length <= 1) return undefined;
+    if (images.length <= 1 || paused) return undefined;
 
     const timer = window.setInterval(() => {
       setActiveIndex((current) => (current + 1) % images.length);
     }, SLIDE_INTERVAL_MS);
 
     return () => window.clearInterval(timer);
-  }, [images.length]);
+  }, [images.length, paused]);
+
+  const handleOpen = () => {
+    if (images.length === 0) return;
+    onImageClick?.(activeIndex);
+  };
 
   if (images.length === 0) {
     return (
@@ -32,16 +37,28 @@ export default function ProductImageCarousel({ item }) {
 
   if (images.length === 1) {
     return (
-      <img
-        src={images[0]}
-        alt={item.name}
-        className="w-full h-full object-cover"
-      />
+      <button
+        type="button"
+        onClick={handleOpen}
+        className="product-card-image-btn w-full h-full block cursor-zoom-in"
+        aria-label={`View ${item.name} image`}
+      >
+        <img
+          src={images[0]}
+          alt={item.name}
+          className="w-full h-full object-cover pointer-events-none"
+        />
+      </button>
     );
   }
 
   return (
-    <div className="product-carousel h-full">
+    <button
+      type="button"
+      onClick={handleOpen}
+      className="product-card-image-btn product-carousel h-full w-full block cursor-zoom-in"
+      aria-label={`View ${item.name} images`}
+    >
       <div
         className="product-carousel-track h-full"
         style={{ transform: `translateX(-${activeIndex * 100}%)` }}
@@ -51,12 +68,12 @@ export default function ProductImageCarousel({ item }) {
             key={url}
             src={url}
             alt={item.name}
-            className="product-carousel-slide"
+            className="product-carousel-slide pointer-events-none"
           />
         ))}
       </div>
 
-      <div className="product-carousel-dots" aria-hidden="true">
+      <div className="product-carousel-dots pointer-events-none" aria-hidden="true">
         {images.map((url, index) => (
           <span
             key={url}
@@ -64,6 +81,6 @@ export default function ProductImageCarousel({ item }) {
           />
         ))}
       </div>
-    </div>
+    </button>
   );
 }

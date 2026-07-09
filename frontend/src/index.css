@@ -649,6 +649,38 @@ img {
   background: #ffffff;
 }
 
+.product-card-image-btn {
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+}
+
+.product-image-modal-img {
+  animation: product-image-modal-in 0.22s ease-out;
+}
+
+@keyframes product-image-modal-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 639px) {
+  .product-image-modal-nav--prev {
+    left: 0.5rem;
+  }
+
+  .product-image-modal-nav--next {
+    right: 0.5rem;
+  }
+}
+
 /* ============================================================
    LIVE CURRENT RULE (animated amber divider)
    ============================================================ */
