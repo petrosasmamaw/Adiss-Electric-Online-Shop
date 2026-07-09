@@ -99,4 +99,38 @@ async function updateOrderStatus(req, res) {
   }
 }
 
-module.exports = { getOrders, createOrder, deleteOrder, updateOrderStatus };
+async function markOrderSeen(req, res) {
+  try {
+    const { id } = req.params;
+
+    const result = await pool.query(
+      `UPDATE orders SET admin_seen_at = NOW() WHERE id = $1 RETURNING *`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+
+    return res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    console.error('markOrderSeen error:', err.message);
+    return res.status(500).json({ success: false, error: 'Failed to mark order as seen' });
+  }
+}
+
+async function markAllOrdersSeen(req, res) {
+  try {
+    await pool.query(
+      `UPDATE orders SET admin_seen_at = NOW() WHERE admin_seen_at IS NULL`
+    );
+
+    const result = await pool.query('SELECT * FROM orders ORDER BY created_at DESC');
+    return res.json({ success: true, data: result.rows });
+  } catch (err) {
+    console.error('markAllOrdersSeen error:', err.message);
+    return res.status(500).json({ success: false, error: 'Failed to mark orders as seen' });
+  }
+}
+
+module.exports = { getOrders, createOrder, deleteOrder, updateOrderStatus, markOrderSeen, markAllOrdersSeen };

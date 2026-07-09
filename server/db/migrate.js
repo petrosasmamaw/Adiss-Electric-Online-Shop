@@ -58,6 +58,11 @@ async function migrateDatabase() {
     CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_admin_id
     ON password_reset_tokens(admin_id)
   `);
+
+  await pool.query(`
+    ALTER TABLE orders
+    ADD COLUMN IF NOT EXISTS admin_seen_at TIMESTAMP
+  `);
 }
 
 module.exports = { migrateDatabase };

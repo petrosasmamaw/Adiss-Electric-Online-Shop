@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { IconEye, IconEyeOff } from '@tabler/icons-react';
+import { IconBell, IconEye, IconEyeOff } from '@tabler/icons-react';
 import { setAdminToken } from '../store/authSlice';
 import { showToast } from '../store/toastSlice';
 import api from '../api/axiosConfig';
+import {
+  isNotificationSupported,
+  requestNotificationPermission,
+} from '../utils/browserNotifications';
 
 function Spinner() {
   return (
@@ -31,6 +35,7 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [enableNotifications, setEnableNotifications] = useState(true);
 
   if (isAuthenticated) {
     return <Navigate to="/admin/dashboard" replace />;
@@ -44,6 +49,16 @@ export default function AdminLogin() {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       dispatch(setAdminToken(data.data.token));
+
+      if (enableNotifications && isNotificationSupported()) {
+        const permission = await requestNotificationPermission();
+        if (permission === 'granted') {
+          dispatch(showToast('Order notifications enabled.', 'success'));
+        } else if (permission === 'denied') {
+          dispatch(showToast('Notifications blocked in browser settings.', 'info', 4000));
+        }
+      }
+
       navigate('/admin/dashboard');
     } catch {
       setError(true);
@@ -122,6 +137,26 @@ export default function AdminLogin() {
               Forgot password?
             </Link>
           </div>
+
+          {isNotificationSupported() && (
+            <label className="mt-4 mb-1 flex items-start gap-3 p-3 rounded-lg border border-border bg-smoke/70 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={enableNotifications}
+                onChange={(e) => setEnableNotifications(e.target.checked)}
+                className="mt-0.5 accent-amber"
+              />
+              <span className="min-w-0">
+                <span className="flex items-center gap-1.5 text-[13px] font-semibold text-ink">
+                  <IconBell size={16} className="text-amber" />
+                  Enable order notifications
+                </span>
+                <span className="block text-[11px] text-muted mt-1 leading-relaxed">
+                  Get instant alerts when a customer places a new order.
+                </span>
+              </span>
+            </label>
+          )}
 
           <button
             type="submit"

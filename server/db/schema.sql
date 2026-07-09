@@ -42,6 +42,7 @@ CREATE TABLE IF NOT EXISTS orders (
   quantity INTEGER NOT NULL DEFAULT 1,
   total_price NUMERIC(10,2),
   status VARCHAR(30) DEFAULT 'pending',
+  admin_seen_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT NOW()
 );
 

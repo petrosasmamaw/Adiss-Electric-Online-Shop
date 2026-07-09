@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 import { IconPackage, IconClipboardList, IconLogout, IconArrowLeft, IconAdjustments } from '@tabler/icons-react';
 import { logout } from '../../store/authSlice';
 import BrandLogo from '../BrandLogo';
+import AdminNotificationBell from './AdminNotificationBell';
+import useAdminOrderNotifications from '../../hooks/useAdminOrderNotifications';
 
 const navItems = [
   { to: '/admin/dashboard/control', label: 'Control', Icon: IconAdjustments, end: false },
@@ -13,6 +15,7 @@ const navItems = [
 export default function AdminLayout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { unseenCount, unseenOrders, seenOrders } = useAdminOrderNotifications();
 
   const handleLogout = () => {
     dispatch(logout());
@@ -21,11 +24,19 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-smoke flex">
-      {/* Desktop sidebar — sticky so footer actions stay on screen */}
-      <aside className="hidden md:flex w-[240px] shrink-0 sticky top-0 h-screen bg-white border-r border-border flex-col">
+      <aside className="hidden md:flex w-[240px] shrink-0 sticky top-0 z-40 h-screen bg-white border-r border-border flex-col">
         <div className="px-5 py-4 border-b border-border shrink-0">
-          <BrandLogo small />
-          <p className="text-muted text-[10px] uppercase tracking-wide mt-0.5">Admin</p>
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <BrandLogo small />
+              <p className="text-muted text-[10px] uppercase tracking-wide mt-0.5">Admin</p>
+            </div>
+            <AdminNotificationBell
+              unseenCount={unseenCount}
+              unseenOrders={unseenOrders}
+              seenOrders={seenOrders}
+            />
+          </div>
         </div>
 
         <nav className="flex-1 py-2 overflow-y-auto min-h-0">
@@ -68,9 +79,13 @@ export default function AdminLayout() {
       </aside>
 
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile top bar */}
-        <header className="md:hidden sticky top-0 z-10 flex items-center h-[52px] px-4 bg-white border-b border-border">
+        <header className="md:hidden sticky top-0 z-10 flex items-center justify-between gap-3 h-[52px] px-4 bg-white border-b border-border">
           <BrandLogo small />
+          <AdminNotificationBell
+            unseenCount={unseenCount}
+            unseenOrders={unseenOrders}
+            seenOrders={seenOrders}
+          />
         </header>
 
         <main className="flex-1 bg-smoke p-4 md:p-6 overflow-auto pb-[118px] md:pb-6">
@@ -80,7 +95,6 @@ export default function AdminLayout() {
         </main>
       </div>
 
-      {/* Mobile bottom bar — tabs on top, shop + logout below */}
       <footer className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-border">
         <nav className="flex h-[52px]">
           {navItems.map(({ to, label, Icon, end }) => (
@@ -89,13 +103,18 @@ export default function AdminLayout() {
               to={to}
               end={end}
               className={({ isActive }) =>
-                `flex-1 flex flex-col items-center justify-center gap-0.5 border-t-2 transition-colors duration-150 ${
+                `relative flex-1 flex flex-col items-center justify-center gap-0.5 border-t-2 transition-colors duration-150 ${
                   isActive ? 'border-amber text-ink' : 'border-transparent text-muted'
                 }`
               }
             >
               <Icon size={20} />
               <span className="text-[10px] font-semibold">{label}</span>
+              {label === 'Orders' && unseenCount > 0 && (
+                <span className="absolute top-1 right-[calc(50%-22px)] min-w-[16px] h-4 px-1 rounded-full bg-amber text-white text-[9px] font-bold flex items-center justify-center">
+                  {unseenCount > 9 ? '9+' : unseenCount}
+                </span>
+              )}
             </NavLink>
           ))}
         </nav>

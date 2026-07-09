@@ -860,3 +860,52 @@ img {
     background: #273C75;
   }
 }
+
+/* ============================================================
+   Admin notification bell
+   ============================================================ */
+@keyframes admin-bell-ring {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  15% {
+    transform: rotate(14deg);
+  }
+  30% {
+    transform: rotate(-12deg);
+  }
+  45% {
+    transform: rotate(10deg);
+  }
+  60% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(4deg);
+  }
+}
+
+.admin-notif-bell-ring {
+  transform-origin: top center;
+  animation: admin-bell-ring 1.8s ease-in-out infinite;
+}
+
+.admin-notif-badge {
+  box-shadow: 0 2px 8px rgba(255, 140, 0, 0.45);
+}
+
+.admin-notif-panel {
+  animation: admin-notif-panel-in 0.2s ease-out;
+}
+
+@keyframes admin-notif-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

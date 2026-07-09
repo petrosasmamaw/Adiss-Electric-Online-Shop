@@ -49,6 +49,30 @@ export const updateOrderStatus = createAsyncThunk(
   }
 );
 
+export const markOrderSeen = createAsyncThunk(
+  'orders/markOrderSeen',
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await api.patch(`/orders/${id}/seen`);
+      return data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.error || 'Failed to mark order as seen');
+    }
+  }
+);
+
+export const markAllOrdersSeen = createAsyncThunk(
+  'orders/markAllOrdersSeen',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.patch('/orders/mark-all-seen');
+      return data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.error || 'Failed to mark all as seen');
+    }
+  }
+);
+
 const ordersSlice = createSlice({
   name: 'orders',
   initialState: {
@@ -110,6 +134,13 @@ const ordersSlice = createSlice({
       })
       .addCase(updateOrderStatus.rejected, (state) => {
         state.updatingStatusId = null;
+      })
+      .addCase(markOrderSeen.fulfilled, (state, action) => {
+        const idx = state.adminOrders.findIndex((o) => o.id === action.payload.id);
+        if (idx !== -1) state.adminOrders[idx] = action.payload;
+      })
+      .addCase(markAllOrdersSeen.fulfilled, (state, action) => {
+        state.adminOrders = action.payload;
       });
   },
 });
