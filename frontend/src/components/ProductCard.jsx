@@ -95,7 +95,7 @@ export default function ProductCard({ item }) {
             onClick={handleOrder}
             className="flex-1 h-8 rounded-md bg-[#0056B3] border-none text-white text-[11px] font-bold uppercase tracking-[0.03em] hover:bg-[#004494] transition-colors duration-150 flex items-center justify-center gap-1"
           >
-            <IconShoppingCart size={13} /> Order
+            <IconShoppingCart size={13} /> Shop Now
           </button>
         </div>
       </article>
